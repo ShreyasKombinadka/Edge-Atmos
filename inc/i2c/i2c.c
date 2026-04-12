@@ -6,6 +6,7 @@
 
 struct I2C i2c;
 
+// Start I2C1 block
 void I2C1_start(void)
 {
     RCC->APB2ENR |= (1 << 3);
@@ -21,7 +22,31 @@ void I2C1_start(void)
     I2C1->CR1 |= 1;
 }
 
-void I2C1_write(uint8_t addr, uint8_t data)
+// Wake the target device
+void I2C1_wake(uint8_t addr)
+{
+    I2C1->CR1 |= (1 << 8);
+    while (!(I2C1->SR1 & 1))
+        ;
+
+    I2C1->DR = (addr << 1) | 0;
+    while (!(I2C1->SR1 & (1 << 1)))
+        ;
+    (void)I2C1->SR2;
+}
+
+// Write 1byte of data(int)
+void I2C1_w1bint(uint8_t data)
+{
+    I2C1->DR = data;
+    while (!(I2C1->SR1 & (1 << 7)))
+        ;
+    while (!(I2C1->SR1 & (1 << 2)))
+        ;
+}
+
+// Wake the target & Write the 1byte of data(int) & Stop the I2C1
+void I2C1_wws1bint(uint8_t addr, uint8_t data)
 {
     I2C1->CR1 |= (1 << 8);
     while (!(I2C1->SR1 & 1))
@@ -37,9 +62,12 @@ void I2C1_write(uint8_t addr, uint8_t data)
         ;
     while (!(I2C1->SR1 & (1 << 2)))
         ;
+
+    I2C1->CR1 |= (1 << 9);
 }
 
-uint8_t I2C1_read1b(uint8_t addr)
+// Read the 1byte of data(int) & Stop the I2C1
+uint8_t I2C1_rs1bint(uint8_t addr)
 {
     I2C1->CR1 |= (1 << 8);
     I2C1->CR1 &= ~(1 << 10);
@@ -59,12 +87,12 @@ uint8_t I2C1_read1b(uint8_t addr)
     return I2C1->DR;
 }
 
-uint16_t I2C1_read2b(uint8_t addr)
+// Read the 2byte of data(int) & Stop the I2C1
+uint16_t I2C1_rs2bint(uint8_t addr)
 {
     uint16_t data = 0;
 
     I2C1->CR1 |= (1 << 8);
-    I2C1->CR1 &= ~(1 << 10);
     while (!(I2C1->SR1 & 1))
         ;
 
@@ -75,7 +103,7 @@ uint16_t I2C1_read2b(uint8_t addr)
 
     while (!(I2C1->SR1 & (1 << 6)))
         ;
-
+    I2C1->CR1 &= ~(1 << 10);
     data = I2C1->DR;
     while (!(I2C1->SR1 & (1 << 6)))
         ;
@@ -86,6 +114,7 @@ uint16_t I2C1_read2b(uint8_t addr)
     return data;
 }
 
+// Stop the I2C1
 void I2C1_stop(void)
 {
     I2C1->CR1 |= (1 << 9);

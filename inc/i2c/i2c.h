@@ -8,13 +8,14 @@ struct I2C
     uint8_t FREQ;
     uint8_t CCR;
     uint8_t TRISE;
-    uint16_t DR;
 };
 
 void I2C1_start(void);
-void I2C1_write(uint8_t addr, uint8_t data);
-uint8_t I2C1_read1b(uint8_t addr);
-uint8_t I2C1_read2b(uint8_t addr);
+void I2C1_wake(uint8_t addr);
+void I2C1_wws1bint(uint8_t addr, uint8_t data);
+void I2C1_w1bint(uint8_t data);
+uint8_t I2C1_rs1bint(uint8_t addr);
+uint16_t I2C1_rs2bint(uint8_t addr);
 void I2C1_stop(void);
 
 #endif
