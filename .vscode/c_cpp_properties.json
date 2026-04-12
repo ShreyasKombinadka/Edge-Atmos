@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:\\ST\\STM32CubeIDE_2.1.0\\STM32CubeIDE\\plugins\\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740\\tools\\bin\\arm-none-eabi-gcc.exe",
+            "intelliSenseMode": "linux-gcc-arm",
+            "cStandard": "c11"
+        }
+    ],
+    "version": 4
+}
