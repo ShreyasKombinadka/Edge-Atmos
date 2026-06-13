@@ -20,7 +20,7 @@ int main(void)
         uint8_t i = 0;
         while (i >= 0 && i < 100)
         {
-            *num = num_to_ascii(i);
+            num = num_to_ascii(i);
             i++;
 
             lcd_w1byte(lcd_addr, num[4]);
