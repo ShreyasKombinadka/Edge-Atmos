@@ -3,13 +3,6 @@
 
 #include <stdint.h>
 
-struct I2C
-{
-    uint8_t FREQ;
-    uint8_t CCR;
-    uint8_t TRISE;
-};
-
 void i2c1_init(void);
 void i2c1_wake(uint8_t addr);
 void i2c1_stop(void);
