@@ -11,24 +11,23 @@ int main(void)
     uint8_t lcd_addr = 0x27;
 
     i2c1_init();
+    lcd_init(lcd_addr);
 
     while (1)
     {
-        i2c1_wake(lcd_addr);
-
-        uint8_t *num;
+        uint8_t *arr;
         uint8_t i = 0;
         while (i >= 0 && i < 100)
         {
-            num = num_to_ascii(i);
+            arr = num_to_ascii(i);
+
+            lcd_wwsc(lcd_addr, 1);
+            for (volatile int x = 0; x < 5; x++)
+                lcd_wws1byte(lcd_addr, arr[x]);
+
             i++;
-
-            lcd_w1byte(lcd_addr, num[4]);
-
             for (volatile int j = 0; j < 10000; j++)
                 ;
         }
-
-        i2c1_stop();
     }
 }

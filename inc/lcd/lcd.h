@@ -3,7 +3,11 @@
 
 #include <stdint.h>
 
-void lcd_w1byte(uint8_t addr, uint8_t data);
+void lcd_init(uint8_t addr);
+void lcd_w1byte(uint8_t data, uint8_t rs);
+void lcd_wwsc(uint8_t addr, uint8_t cmd);
+void lcd_wws1byte(uint8_t addr, uint8_t data);
+void lcd_wwsnbyte(uint8_t addr, uint64_t data, int n);
 
 #endif
 
