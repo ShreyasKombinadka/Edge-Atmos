@@ -10,17 +10,17 @@ int main(void)
 {
     uint8_t lcd_addr = 0x27;
 
-    I2C1_init();
+    i2c1_init();
 
     while (1)
     {
-        I2C1_wake(lcd_addr);
+        i2c1_wake(lcd_addr);
 
         uint8_t *num;
         uint8_t i = 0;
         while (i >= 0 && i < 100)
         {
-            num = num_to_ascii(i);
+            *num = num_to_ascii(i);
             i++;
 
             lcd_w1byte(lcd_addr, num[4]);
@@ -29,6 +29,6 @@ int main(void)
                 ;
         }
 
-        I2C1_stop();
+        i2c1_stop();
     }
 }
