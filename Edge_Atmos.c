@@ -12,6 +12,7 @@ int main(void)
 
     i2c1_init();
     lcd_init(lcd_addr);
+    lcd_wwscmd(lcd_addr, 1);
 
     while (1)
     {
@@ -21,7 +22,8 @@ int main(void)
         {
             arr = num_to_ascii(i);
 
-            lcd_wwsc(lcd_addr, 1);
+            lcd_wwscmd(lcd_addr, 1);
+            lcd_wwschar(lcd_addr, "Temp: ");
 
             for (volatile int x = 0; x < 5; x++)
                 lcd_wws1byte(lcd_addr, arr[x]);

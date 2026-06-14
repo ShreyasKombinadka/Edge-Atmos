@@ -13,36 +13,16 @@ void lcd_init(uint8_t addr)
     i2c1_wake(addr);
 
     lcd_w1byte(0x33, 0);
-    for (volatile int i = 0; i < 50; i++)
-        for (volatile int j = 0; j < 600; j++)
-            ;
-    ;
+
     lcd_w1byte(0x32, 0);
-    for (volatile int i = 0; i < 50; i++)
-        for (volatile int j = 0; j < 600; j++)
-            ;
-    ;
+
     lcd_w1byte(0x28, 0);
-    for (volatile int i = 0; i < 50; i++)
-        for (volatile int j = 0; j < 600; j++)
-            ;
-    ;
+
     lcd_w1byte(0x0C, 0);
-    for (volatile int i = 0; i < 50; i++)
-        for (volatile int j = 0; j < 600; j++)
-            ;
-    ;
+
     lcd_w1byte(0x06, 0);
-    for (volatile int i = 0; i < 50; i++)
-        for (volatile int j = 0; j < 600; j++)
-            ;
-    ;
 
     lcd_w1byte(0x1, 0);
-    for (volatile int i = 0; i < 50; i++)
-        for (volatile int j = 0; j < 600; j++)
-            ;
-    ;
 
     i2c1_stop();
 }
@@ -57,17 +37,16 @@ void lcd_w1byte(uint8_t data, uint8_t rs)
     i2c1_w1byte(((data << 4) & ~0xF) | 0x8 | rs);
     for (volatile int i = 0; i < 750; i++)
         ;
+
+    for (volatile int i = 0; i < 300; i++)
+        ;
 }
 
-void lcd_wwsc(uint8_t addr, uint8_t cmd)
+void lcd_wwscmd(uint8_t addr, uint8_t cmd)
 {
     i2c1_wake(addr);
 
     lcd_w1byte(cmd, 0);
-    for (volatile int i = 0; i < 50; i++)
-        for (volatile int j = 0; j < 600; j++)
-            ;
-    ;
 
     i2c1_stop();
 }
@@ -77,30 +56,37 @@ void lcd_wws1byte(uint8_t addr, uint8_t data)
     i2c1_wake(addr);
 
     lcd_w1byte(data, 1);
-    for (volatile int i = 0; i < 50; i++)
-        for (volatile int j = 0; j < 600; j++)
-            ;
-    ;
 
     i2c1_stop();
 }
 
-void lcd_wwsnbyte(uint8_t addr, uint64_t data, int n)
+void lcd_wws8byte(uint8_t addr, uint64_t data, int n)
 {
     i2c1_wake(addr);
 
-    uint8_t data_temp = data;
+    uint8_t data_temp;
 
-    int count = 0;
-    while (count <= n - 1)
+    int count = n;
+    while (count >= 0)
     {
         data_temp = (data >> (8 * count));
 
         lcd_w1byte(data_temp, 1);
-        for (volatile int i = 0; i < 50; i++)
-            for (volatile int j = 0; j < 600; j++)
-                ;
-        ;
+
+        count--;
+    }
+
+    i2c1_stop();
+}
+
+void lcd_wwschar(uint8_t addr, uint8_t *char_addr)
+{
+    i2c1_wake(addr);
+
+    uint8_t count = 0;
+    while (char_addr[count] != '\0')
+    {
+        lcd_w1byte(char_addr[count], 1);
 
         count++;
     }

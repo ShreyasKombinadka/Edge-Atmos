@@ -20,5 +20,20 @@ uint8_t *num_to_ascii(float num)
         count--;
     }
 
+    if (count != 0 && num_temp == 0)
+    {
+        while (count >= 0)
+        {
+            if (count == (2))
+                num_ascii[count] = 0x2E;
+            else
+            {
+                num_ascii[count] = 0x30;
+            }
+
+            count--;
+        }
+    }
+
     return num_ascii;
 }
