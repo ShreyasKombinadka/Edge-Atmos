@@ -93,3 +93,22 @@ void lcd_wwschar(uint8_t addr, uint8_t *char_addr)
 
     i2c1_stop();
 }
+
+void lcd_debug(uint8_t addr, uint8_t *char_addr)
+{
+    i2c1_wake(addr);
+
+    uint8_t count = 0;
+    while (char_addr[count] != '\0')
+    {
+        lcd_w1byte(char_addr[count], 1);
+
+        count++;
+    }
+
+    for (volatile int d = 0; d < 1000000; d++)
+        ;
+    lcd_w1byte(0x1, 0);
+
+    i2c1_stop();
+}

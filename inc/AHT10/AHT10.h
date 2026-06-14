@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 void aht10_init(void);
-uint64_t aht10_read(void);
+uint8_t *aht10_read(void);
 
 #endif
 

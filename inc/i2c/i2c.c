@@ -67,7 +67,7 @@ void i2c1_wws1byte(uint8_t addr, uint8_t data)
     while (!(I2C1->SR1 & (1 << 2)))
         ;
 
-    I2C1->CR1 |= (1 << 9);
+    i2c1_stop();
 }
 
 // Read the 1byte of data(int) & Stop the I2C1
@@ -86,7 +86,7 @@ uint8_t i2c1_rs1byte(uint8_t addr)
     while (!(I2C1->SR1 & (1 << 6)))
         ;
 
-    I2C1->CR1 |= (1 << 9);
+    i2c1_stop();
 
     return I2C1->DR;
 }
@@ -113,15 +113,13 @@ uint16_t i2c1_rs2byte(uint8_t addr)
         ;
     data = (data << 8) | I2C1->DR;
 
-    I2C1->CR1 |= (1 << 9);
+    i2c1_stop();
 
     return data;
 }
 
-uint64_t i2c1_rsnbyte(uint8_t addr, int n)
+void i2c1_rsnbyte(uint8_t addr, uint8_t *data_addr, int n)
 {
-    uint64_t data = 0;
-
     I2C1->CR1 |= (1 << 8);
     while (!(I2C1->SR1 & 1))
         ;
@@ -140,12 +138,10 @@ uint64_t i2c1_rsnbyte(uint8_t addr, int n)
         while (!(I2C1->SR1 & (1 << 6)))
             ;
 
-        data = (data << 8) | I2C1->DR;
+        data_addr[i] = I2C1->DR;
 
         i++;
     }
 
-    I2C1->CR1 |= (1 << 9);
-
-    return data;
+    i2c1_stop();
 }
