@@ -64,6 +64,10 @@ void lcd_wwsc(uint8_t addr, uint8_t cmd)
     i2c1_wake(addr);
 
     lcd_w1byte(cmd, 0);
+    for (volatile int i = 0; i < 50; i++)
+        for (volatile int j = 0; j < 600; j++)
+            ;
+    ;
 
     i2c1_stop();
 }
@@ -73,6 +77,10 @@ void lcd_wws1byte(uint8_t addr, uint8_t data)
     i2c1_wake(addr);
 
     lcd_w1byte(data, 1);
+    for (volatile int i = 0; i < 50; i++)
+        for (volatile int j = 0; j < 600; j++)
+            ;
+    ;
 
     i2c1_stop();
 }
@@ -89,6 +97,10 @@ void lcd_wwsnbyte(uint8_t addr, uint64_t data, int n)
         data_temp = (data >> (8 * count));
 
         lcd_w1byte(data_temp, 1);
+        for (volatile int i = 0; i < 50; i++)
+            for (volatile int j = 0; j < 600; j++)
+                ;
+        ;
 
         count++;
     }

@@ -22,11 +22,12 @@ int main(void)
             arr = num_to_ascii(i);
 
             lcd_wwsc(lcd_addr, 1);
+
             for (volatile int x = 0; x < 5; x++)
                 lcd_wws1byte(lcd_addr, arr[x]);
 
             i++;
-            for (volatile int j = 0; j < 10000; j++)
+            for (volatile int j = 0; j < 1000000; j++)
                 ;
         }
     }
