@@ -2,14 +2,8 @@
 #include "../i2c/i2c.h"
 #include <stdint.h>
 
-#define STM32F103xB
-#include "stm32f1xx.h"
-
 void lcd_init(uint8_t addr)
 {
-    if (!(I2C1->CR1 & 1))
-        i2c1_init();
-
     i2c1_wake(addr);
 
     lcd_w1byte(0x33, 0);
@@ -98,6 +92,8 @@ void lcd_debug(uint8_t addr, uint8_t *char_addr)
 {
     i2c1_wake(addr);
 
+    lcd_w1byte(0x1, 0);
+
     uint8_t count = 0;
     while (char_addr[count] != '\0')
     {
@@ -111,4 +107,9 @@ void lcd_debug(uint8_t addr, uint8_t *char_addr)
     lcd_w1byte(0x1, 0);
 
     i2c1_stop();
+}
+
+void lcd_clear(uint8_t addr)
+{
+    lcd_wwscmd(addr, 1);
 }

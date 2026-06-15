@@ -12,10 +12,8 @@ int main(void)
     uint8_t lcd_addr = 0x27;
 
     i2c1_init();
-    lcd_debug(lcd_addr, "i2c done..!");
-
     lcd_init(lcd_addr);
-    lcd_wwscmd(lcd_addr, 1);
+    lcd_clear();
     lcd_debug(lcd_addr, "lcd done..!");
 
     lcd_debug(lcd_addr, "aht10 start..!");
