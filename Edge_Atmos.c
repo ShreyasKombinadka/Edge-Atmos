@@ -5,7 +5,7 @@
 #include "./AHT10/AHT10.h"
 
 #define STM32F103xB
-#include "stm32f1xx.h"
+#include "./STM32F103_CMSIS/stm32f1xx.h"
 
 int main(void)
 {
@@ -13,9 +13,9 @@ int main(void)
 
     i2c1_init();
     lcd_init(lcd_addr);
+    lcd_debug(lcd_addr, "Starting..!");
 
     aht10_init();
-    lcd_debug(lcd_addr, "aht10 setup done..!");
 
     while (1)
     {
@@ -32,13 +32,16 @@ int main(void)
         num_00_00_ascii(*temp_ptr, temp_char_arr);
         num_00_00_ascii(*humi_ptr, humi_char_arr);
 
+        lcd_clear(lcd_addr);
+
         lcd_wwsstring(lcd_addr, "Temp: ");
         lcd_wwsstring(lcd_addr, temp_char_arr);
 
+        lcd_row2(lcd_addr);
         lcd_wwsstring(lcd_addr, "Humi: ");
         lcd_wwsstring(lcd_addr, humi_char_arr);
 
-        for (volatile int j = 0; j < 1000000; j++)
+        for (volatile int i = 0; i < 1000000; i++)
             ;
     }
 }

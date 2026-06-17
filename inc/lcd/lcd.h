@@ -11,6 +11,7 @@ void lcd_wws8byte(uint8_t addr, uint64_t data, int n);
 void lcd_wwsstring(uint8_t addr, uint8_t *char_addr);
 void lcd_debug(uint8_t addr, uint8_t *char_addr);
 void lcd_clear(uint8_t addr);
+void lcd_row2(uint8_t addr);
 
 #endif
 
@@ -66,6 +67,9 @@ Bit 0 (LSB): RS - Register Select (0 = Command, 1 = Data)
 
 [0x28] Function Set
        - Configures hardware interface: 4-bit mode, 2 lines matrix, 5x8 font size.
+
+[0xC0] Row 2, Column 1 Address
+       - Positions the text cursor at the start of the second row.
 
 
 ================================================================================

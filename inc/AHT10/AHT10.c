@@ -9,7 +9,7 @@ void aht10_init(void)
     i2c1_w1byte(0xBE);
     i2c1_w1byte(0x08);
     i2c1_w1byte(0x00);
-    for (volatile int i = 0; i < 1000; i++)
+    for (volatile int i = 0; i < 1500; i++)
         for (volatile int j = 0; j < 2400; j++)
             ;
 
