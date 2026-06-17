@@ -13,7 +13,7 @@ int main(void)
 
     i2c1_init();
     lcd_init(lcd_addr);
-    lcd_debug(lcd_addr, "Edge Atmos");
+    lcd_printc(lcd_addr, "Edge Atmos");
 
     aht10_init();
 
@@ -34,12 +34,12 @@ int main(void)
 
         lcd_clear(lcd_addr);
 
-        lcd_wwsstring(lcd_addr, "Temp: ");
-        lcd_wwsstring(lcd_addr, temp_char_arr);
+        lcd_print(lcd_addr, "Temp: ");
+        lcd_print(lcd_addr, temp_char_arr);
 
         lcd_row2(lcd_addr);
-        lcd_wwsstring(lcd_addr, "Humi: ");
-        lcd_wwsstring(lcd_addr, humi_char_arr);
+        lcd_print(lcd_addr, "Humi: ");
+        lcd_print(lcd_addr, humi_char_arr);
 
         for (volatile int i = 0; i < 1000000; i++)
             ;

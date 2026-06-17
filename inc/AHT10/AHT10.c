@@ -15,7 +15,7 @@ void aht10_init(void)
 
     i2c1_stop();
 
-    for (volatile int i = 0; i < 1000; i++)
+    for (volatile int i = 0; i < 500; i++)
         ;
 }
 
