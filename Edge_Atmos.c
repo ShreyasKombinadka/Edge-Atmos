@@ -13,7 +13,7 @@ int main(void)
 
     i2c1_init();
     lcd_init(lcd_addr);
-    lcd_debug(lcd_addr, "Starting..!");
+    lcd_debug(lcd_addr, "Edge Atmos");
 
     aht10_init();
 
