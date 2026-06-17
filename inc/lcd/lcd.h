@@ -8,7 +8,7 @@ void lcd_w1byte(uint8_t data, uint8_t rs);
 void lcd_wwscmd(uint8_t addr, uint8_t cmd);
 void lcd_wws1byte(uint8_t addr, uint8_t data);
 void lcd_wws8byte(uint8_t addr, uint64_t data, int n);
-void lcd_wwschar(uint8_t addr, uint8_t *char_addr);
+void lcd_wwsstring(uint8_t addr, uint8_t *char_addr);
 void lcd_debug(uint8_t addr, uint8_t *char_addr);
 void lcd_clear(uint8_t addr);
 

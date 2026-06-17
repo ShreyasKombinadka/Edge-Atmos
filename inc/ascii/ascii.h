@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-uint8_t *num_to_ascii(float num);
+void num_00_00_ascii(float num, uint8_t *num_ascii);
 
 #endif

@@ -1,9 +1,8 @@
 #include "ascii.h"
 #include <stdint.h>
 
-uint8_t *num_to_ascii(float num)
+void num_00_00_ascii(float num, uint8_t *num_ascii)
 {
-    static uint8_t num_ascii[5];
     int num_temp = num * 100;
 
     int count = 4;
@@ -34,6 +33,4 @@ uint8_t *num_to_ascii(float num)
             count--;
         }
     }
-
-    return num_ascii;
 }

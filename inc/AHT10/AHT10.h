@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 void aht10_init(void);
-void aht10_read(uint8_t *temp, uint8_t *humi);
+void aht10_read(float *temp, float *humi);
 
 #endif
 
@@ -62,7 +62,11 @@ Temperature Bit Alignment:
 - This creates the final 20-bit raw integer value.
 
 Mathematical Formula:
-                                  (Raw_Value * 200)
-             Temperature (°C) =  -------------------  -  50
-                                       1048576
+                                 (Raw_Value * 200)
+            Temperature (°C)  =  -------------------  -  50
+                                    1048576
+
+                                 (Raw_Value * 100)
+      Relative Humidity (%)   = -------------------
+                                    1048576
 */

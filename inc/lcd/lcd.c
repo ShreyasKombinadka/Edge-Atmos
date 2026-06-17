@@ -73,7 +73,7 @@ void lcd_wws8byte(uint8_t addr, uint64_t data, int n)
     i2c1_stop();
 }
 
-void lcd_wwschar(uint8_t addr, uint8_t *char_addr)
+void lcd_wwsstring(uint8_t addr, uint8_t *char_addr)
 {
     i2c1_wake(addr);
 

@@ -16,9 +16,9 @@ void aht10_init(void)
     i2c1_stop();
 }
 
-void aht10_read(uint8_t *temp, uint8_t *humi)
+void aht10_read(float *temp, float *humi)
 {
-    static uint8_t data[6];
+    uint8_t data[6];
 
     i2c1_wake(0x38);
 
@@ -30,5 +30,6 @@ void aht10_read(uint8_t *temp, uint8_t *humi)
 
     i2c1_rsnbyte(0x38, data, 6);
 
-    *temp = data[5] | data[4] | ((data[3] & ~0xF0) << 4);
+    *temp = (((((data[3] & ~0xF0) << 16) | (data[4] << 8) | data[5]) * 200) / 1048576.0) - 50;
+    *humi = (((data[1] << 16) | (data[2] << 8) | (data[3] & ~0x0F)) * 100) / 1048576.0;
 }

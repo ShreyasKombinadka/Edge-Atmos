@@ -13,28 +13,30 @@ int main(void)
 
     i2c1_init();
     lcd_init(lcd_addr);
-    lcd_clear(lcd_addr);
-    lcd_debug(lcd_addr, "lcd done..!");
 
-    lcd_debug(lcd_addr, "aht10 start..!");
     aht10_init();
-    lcd_debug(lcd_addr, "aht10 done..!");
+    lcd_debug(lcd_addr, "aht10 setup done..!");
 
     while (1)
     {
-        uint8_t *arr;
+        float temp = 0.0;
+        float humi = 0.0;
+        float *temp_ptr = &temp;
+        float *humi_ptr = &humi;
 
-        uint8_t *temp;
-        uint8_t *humi;
-        aht10_read(temp, humi);
+        uint8_t temp_char_arr[5];
+        uint8_t humi_char_arr[5];
 
-        arr = num_to_ascii(*temp);
+        aht10_read(temp_ptr, humi_ptr);
 
-        lcd_wwscmd(lcd_addr, 1);
-        lcd_wwschar(lcd_addr, "Temp: ");
+        num_00_00_ascii(*temp_ptr, temp_char_arr);
+        num_00_00_ascii(*humi_ptr, humi_char_arr);
 
-        for (volatile int x = 0; x < 5; x++)
-            lcd_wws1byte(lcd_addr, arr[x]);
+        lcd_wwsstring(lcd_addr, "Temp: ");
+        lcd_wwsstring(lcd_addr, temp_char_arr);
+
+        lcd_wwsstring(lcd_addr, "Humi: ");
+        lcd_wwsstring(lcd_addr, humi_char_arr);
 
         for (volatile int j = 0; j < 1000000; j++)
             ;
