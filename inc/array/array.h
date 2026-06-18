@@ -1,10 +1,8 @@
-#ifndef ASCII_H
-#define ASCII_H
+#ifndef ARRAY_H
+#define ARRAY_H
 
 #include <stdint.h>
 
-void num_int0000_ascii(int num, uint8_t *num_ascii);
-void num_int00_00_ascii(int num, uint8_t *num_ascii);
-void num_float00_00_ascii(float num, uint8_t *num_ascii);
+void array_invert(uint8_t *arr_addr, int arr_size);
 
 #endif

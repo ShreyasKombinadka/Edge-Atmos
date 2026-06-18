@@ -39,7 +39,7 @@ int main(void)
         num_float00_00_ascii(aht_temp, aht_temp_char_arr);
         num_int00_00_ascii(bmp_temp, bmp_temp_char_arr);
         num_int00_00_ascii(humi, humi_char_arr);
-        num_int0000_ascii(pres, pres_char_arr);
+        num_uint0000_ascii(pres, pres_char_arr);
 
         lcd_clear(lcd_addr);
 

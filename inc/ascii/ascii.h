@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-void num_int0000_ascii(int num, uint8_t *num_ascii);
+void num_uint0000_ascii(unsigned int num, uint8_t *num_ascii);
 void num_int00_00_ascii(int num, uint8_t *num_ascii);
 void num_float00_00_ascii(float num, uint8_t *num_ascii);
 

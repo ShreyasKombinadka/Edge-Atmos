@@ -1,15 +1,26 @@
 #include "ascii.h"
+#include "./array/array.h"
 #include <stdint.h>
 
-void num_int0000_ascii(int num, uint8_t *num_ascii)
+void num_uint0000_ascii(unsigned int num, uint8_t *num_ascii)
 {
-    int num_temp = num;
-
+    unsigned int num_temp = num;
     int count = 0;
-    while (num_temp > 0)
+
+    if (num_temp > 0)
     {
-        num_ascii[count] = (num_temp % 10) + '0';
-        num_temp /= 10;
+        while (num_temp > 0)
+        {
+            num_ascii[count] = (num_temp % 10) + '0';
+            num_temp /= 10;
+            count++;
+        }
+
+        array_invert(num_ascii, count);
+    }
+    else
+    {
+        num_ascii[0] = '0';
         count++;
     }
 
