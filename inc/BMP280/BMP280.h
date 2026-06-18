@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-void bmp280_init(uint8_t *factory_calibration_data);
-void bmp280_read(uint8_t *factory_calibration_data, float *temp, float *humi);
+void bmp280_init(uint8_t *FACTORY_CALIBRATION_DATA);
+void bmp280_read(uint8_t *FACTORY_CALIBRATION_DATA, uint32_t *pres, float *temp);
 
 #endif
 

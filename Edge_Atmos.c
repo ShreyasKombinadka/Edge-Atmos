@@ -19,27 +19,36 @@ int main(void)
         ;
 
     aht10_init();
-    bmp280_init();
+
+    uint16_t FACTORY_CALIBRATION_DATA[24];
+    bmp280_init(FACTORY_CALIBRATION_DATA);
 
     while (1)
     {
-        float temp = 0.0;
+        float aht_temp = 0.0;
+        float bmp_temp = 0.0;
         float humi = 0.0;
-        float *temp_ptr = &temp;
+        uint32_t pres = 0;
+
+        float *aht_temp_ptr = &aht_temp;
+        float *bmp_temp_ptr = &bmp_temp;
         float *humi_ptr = &humi;
 
-        uint8_t temp_char_arr[6];
+        uint8_t aht_temp_char_arr[6];
+        uint8_t bmp_temp_char_arr[6];
         uint8_t humi_char_arr[6];
 
-        aht10_read(temp_ptr, humi_ptr);
+        aht10_read(aht_temp_ptr, humi_ptr);
+        bmp280_read(FACTORY_CALIBRATION_DATA, pres, bmp_temp_ptr);
 
-        num_00_00_ascii(*temp_ptr, temp_char_arr);
+        num_00_00_ascii(*aht_temp_ptr, aht_temp_char_arr);
+        num_00_00_ascii(*bmp_temp_ptr, bmp_temp_char_arr);
         num_00_00_ascii(*humi_ptr, humi_char_arr);
 
         lcd_clear(lcd_addr);
 
         lcd_print(lcd_addr, "Temp: ");
-        lcd_print(lcd_addr, temp_char_arr);
+        lcd_print(lcd_addr, aht_temp_char_arr);
         lcd_char(lcd_addr, 0xDF);
         lcd_char(lcd_addr, 'C');
 
@@ -47,6 +56,20 @@ int main(void)
         lcd_print(lcd_addr, "Humi: ");
         lcd_print(lcd_addr, humi_char_arr);
         lcd_char(lcd_addr, '%');
+
+        for (volatile int i = 0; i < 1000000; i++)
+            ;
+
+        lcd_clear(lcd_addr);
+        lcd_print(lcd_addr, "Pres: ");
+        lcd_print(lcd_addr, pres);
+        lcd_string(lcd_addr, 'psi');
+
+        lcd_row2(lcd_addr);
+        lcd_print(lcd_addr, "Temp: ");
+        lcd_print(lcd_addr, bmp_temp_char_arr);
+        lcd_char(lcd_addr, 0xDF);
+        lcd_char(lcd_addr, 'C');
 
         for (volatile int i = 0; i < 1000000; i++)
             ;
