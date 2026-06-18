@@ -33,4 +33,6 @@ void num_00_00_ascii(float num, uint8_t *num_ascii)
             count--;
         }
     }
+
+    num_ascii[5] = '\0';
 }
