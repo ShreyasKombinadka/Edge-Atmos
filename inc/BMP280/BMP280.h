@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-void bmp280_init(void);
-void bmp280_read(float *temp, float *humi);
+void bmp280_init(uint8_t *factory_calibration_data);
+void bmp280_read(uint8_t *factory_calibration_data, float *temp, float *humi);
 
 #endif
 
@@ -61,19 +61,26 @@ Temperature Bit Alignment:
 - Take Byte 4 to form the highest bits [19:12] of the temperature.
 - Append Byte 5 to form the middle bits [11:4].
 - Append the upper 4 bits (Bits 7–4) of Byte 6 to form the lowest bits [3:0].
-- This creates the final 20-bit raw integer value.
+- This creates the final 20-bit raw integer value (adc_T).
 
 Pressure Bit Alignment:
 - Take Byte 1 to form the highest bits [19:12] of the pressure.
 - Append Byte 2 to form the middle bits [11:4].
 - Append the upper 4 bits (Bits 7–4) of Byte 3 to form the lowest bits [3:0].
-- This creates the final 20-bit raw integer value.
+- This creates the final 20-bit raw integer value (adc_P).
 
-Mathematical Formula:
-Unlike simpler sensors, the BMP280 requires 20-bit raw values to be passed through
-factory calibration trimming parameters (dig_T1..dig_T3 and dig_P1..dig_P9)
-stored in registers 0x88 to 0xA1.
 
-                     Raw_Value passed to Bosch API equations
-     Final Result -> yields compensated Temperature (°C) and Pressure (Pa).
+================================================================================
+                         FACTORY CALIBRATION DATA
+================================================================================
+Before running conversion math, read 24 consecutive bytes starting from
+register address 0x88. These constants are hardcoded on each chip at the factory.
+
+- Bytes 1 & 2   : Temperature Scale Factor Baseline (Unsigned 16-bit)
+- Bytes 3 & 4   : Temperature First-order Coefficient (Signed 16-bit)
+- Bytes 5 & 6   : Temperature Second-order Coefficient (Signed 16-bit)
+- Bytes 7 & 8   : Pressure Scale Factor Baseline (Unsigned 16-bit)
+- Bytes 9 to 24 : Pressure Linearity Compensation Parameters (Signed 16-bit)
+                  Divided into 8 consecutive 2-byte values used to correct
+                  sensor variations across varying operating temperatures.
 */

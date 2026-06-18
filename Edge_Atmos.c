@@ -3,6 +3,7 @@
 #include "./ascii/ascii.h"
 #include "./lcd/lcd.h"
 #include "./AHT10/AHT10.h"
+#include "./BMP280/BMP280.h"
 
 #define STM32F103xB
 #include "./STM32F103_CMSIS/stm32f1xx.h"
@@ -18,6 +19,7 @@ int main(void)
         ;
 
     aht10_init();
+    bmp280_init();
 
     while (1)
     {
