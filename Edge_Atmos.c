@@ -20,7 +20,7 @@ int main(void)
 
     aht10_init();
 
-    uint16_t FACTORY_CALIBRATION_DATA[24];
+    uint8_t FACTORY_CALIBRATION_DATA[24];
     bmp280_init(FACTORY_CALIBRATION_DATA);
 
     while (1)
@@ -29,20 +29,17 @@ int main(void)
         float bmp_temp = 0.0;
         float humi = 0.0;
         uint32_t pres = 0;
-        float *aht_temp_ptr = &aht_temp;
-        float *bmp_temp_ptr = &bmp_temp;
-        float *humi_ptr = &humi;
-        aht10_read(aht_temp_ptr, humi_ptr);
-        bmp280_read(FACTORY_CALIBRATION_DATA, pres, bmp_temp_ptr);
+        aht10_read(&aht_temp, &humi);
+        bmp280_read(FACTORY_CALIBRATION_DATA, &pres, &bmp_temp);
 
         uint8_t aht_temp_char_arr[6];
         uint8_t bmp_temp_char_arr[6];
         uint8_t humi_char_arr[6];
         uint8_t pres_char_arr[6];
-        num_00_00_ascii(*aht_temp_ptr, aht_temp_char_arr);
-        num_00_00_ascii(*bmp_temp_ptr, bmp_temp_char_arr);
-        num_00_00_ascii(*humi_ptr, humi_char_arr);
-        num_00_00_ascii(pres, pres_char_arr);
+        num_float00_00_ascii(aht_temp, aht_temp_char_arr);
+        num_int00_00_ascii(bmp_temp, bmp_temp_char_arr);
+        num_int00_00_ascii(humi, humi_char_arr);
+        num_int0000_ascii(pres, pres_char_arr);
 
         lcd_clear(lcd_addr);
 
@@ -62,7 +59,7 @@ int main(void)
         lcd_clear(lcd_addr);
         lcd_print(lcd_addr, "Pres: ");
         lcd_print(lcd_addr, pres_char_arr);
-        lcd_string(lcd_addr, 'psi');
+        lcd_print(lcd_addr, "psi");
 
         lcd_row2(lcd_addr);
         lcd_print(lcd_addr, "Temp: ");

@@ -1,15 +1,36 @@
 #include "ascii.h"
 #include <stdint.h>
 
-void num_0000_ascii(float num, uint8_t *num_ascii)
+void num_int0000_ascii(int num, uint8_t *num_ascii)
 {
-    int num_temp = num * 100;
+    int num_temp = num;
 
-    int count = 4;
+    int count = 0;
     while (num_temp > 0)
     {
         num_ascii[count] = (num_temp % 10) + '0';
         num_temp /= 10;
+        count++;
+    }
+
+    num_ascii[count] = '\0';
+}
+
+void num_int00_00_ascii(int num, uint8_t *num_ascii)
+{
+    int num_temp = num;
+
+    int count = 4;
+    while (num_temp > 0)
+    {
+        if (count == (2))
+            num_ascii[count] = 0x2E;
+        else
+        {
+            num_ascii[count] = (num_temp % 10) + '0';
+            num_temp /= 10;
+        }
+
         count--;
     }
 
@@ -31,7 +52,7 @@ void num_0000_ascii(float num, uint8_t *num_ascii)
     num_ascii[5] = '\0';
 }
 
-void num_00_00_ascii(float num, uint8_t *num_ascii)
+void num_float00_00_ascii(float num, uint8_t *num_ascii)
 {
     int num_temp = num * 100;
 
