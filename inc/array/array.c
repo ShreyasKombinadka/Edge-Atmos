@@ -1,7 +1,7 @@
 #include "array.h"
 #include <stdint.h>
 
-void array_invert(uint8_t *arr_addr, int arr_size)
+void arr_inv(uint8_t *arr_addr, int arr_size)
 {
     if (arr_size >= 2)
     {
@@ -12,5 +12,18 @@ void array_invert(uint8_t *arr_addr, int arr_size)
             arr_addr[(arr_size - 1) - i] = arr_addr[i];
             arr_addr[i] = temp;
         }
+    }
+}
+
+void arr_rshift(uint8_t *arr_addr, int arr_size)
+{
+    if (arr_size >= 2)
+    {
+        for (volatile int i = (arr_size - 1); i > 0; i--)
+        {
+            arr_addr[i] = arr_addr[i - 1];
+        }
+
+        arr_addr[0] = '0';
     }
 }

@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
-void array_invert(uint8_t *arr_addr, int arr_size);
+void arr_inv(uint8_t *arr_addr, int arr_size);
+void arr_rshift(uint8_t *arr_addr, int arr_size);
 
 #endif
