@@ -35,6 +35,6 @@ void aht10_read(float *temp, float *humi)
 
     i2c1_rsnbyte(0x38, data, 6);
 
-    *temp = (((((data[3] & ~0xF0) << 16) | (data[4] << 8) | data[5]) * 200) / 1048576.0) - 50;
-    *humi = (((data[1] << 16) | (data[2] << 8) | (data[3] & ~0x0F)) * 100) / 1048576.0;
+    *temp = (((((data[3] & 0x0F) << 16) | (data[4] << 8) | data[5]) * 200) / 1048576.0) - 50;
+    *humi = (((data[1] << 12) | (data[2] << 4) | ((data[3] & 0xF0) >> 4)) * 100) / 1048576.0;
 }

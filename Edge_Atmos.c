@@ -25,10 +25,10 @@ int main(void)
 
     while (1)
     {
-        float aht_temp = 0.0;
-        float bmp_temp = 0.0;
-        float humi = 0.0;
-        uint32_t pres = 0;
+        float aht_temp = 0;
+        float bmp_temp = 0;
+        float humi = 0;
+        float pres = 0;
         aht10_read(&aht_temp, &humi);
         bmp280_read(FACTORY_CALIBRATION_DATA, &pres, &bmp_temp);
 
