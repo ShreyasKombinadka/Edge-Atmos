@@ -36,10 +36,10 @@ int main(void)
         uint8_t bmp_temp_char_arr[6];
         uint8_t humi_char_arr[6];
         uint8_t pres_char_arr[6];
-        num_float00_00_ascii(aht_temp, aht_temp_char_arr);
-        num_int00_00_ascii(bmp_temp, bmp_temp_char_arr);
-        num_int00_00_ascii(humi, humi_char_arr);
-        num_uint0000_ascii(pres, pres_char_arr);
+        num_4digi_ascii(aht_temp, aht_temp_char_arr);
+        num_4digi_ascii(bmp_temp, bmp_temp_char_arr);
+        num_4digi_ascii(humi, humi_char_arr);
+        num_uint_ascii(pres, pres_char_arr);
 
         lcd_clear(lcd_addr);
 
