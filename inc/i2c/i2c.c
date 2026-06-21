@@ -4,6 +4,12 @@
 #define STM32F103xB
 #include "stm32f1xx.h"
 
+/* Interupt intigration is under development
+void I2C1_EV_IRQHandler(void)
+{
+}
+*/
+
 // Start I2C1 block
 void i2c1_init(void)
 {
@@ -18,6 +24,9 @@ void i2c1_init(void)
     I2C1->CCR = 40;
     I2C1->TRISE = 9;
     I2C1->CR1 |= 1;
+
+    // I2C1->CR2 |= (1U << 9);
+    // NVIC->ISER[0] |= (1U << 31);
 }
 
 // Wake the target device
