@@ -1,7 +1,5 @@
 #include "BMP280.h"
 #include "../i2c/i2c.h"
-#include "../ascii/ascii.h"
-#include "../lcd/lcd.h"
 #include <stdint.h>
 
 void bmp280_init(uint8_t *FACTORY_CALIBRATION_DATA)
@@ -37,71 +35,23 @@ void bmp280_read(uint8_t *FACTORY_CALIBRATION_DATA, float *pres, float *temp)
     i2c1_rsnbyte(0x76, data, 6);
 
     uint16_t TSFB = (FACTORY_CALIBRATION_DATA[1] << 8) | FACTORY_CALIBRATION_DATA[0]; // Temperature Scale Factor Baseline
-    uint8_t arr0[12];
-    num_uint_ascii(TSFB, arr0);
-    lcd_clear(0x27);
-    lcd_print(0x27, arr0);
-    lcd_char(0x27, 0x20);
-    for (volatile int i = 0; i < 1000; i++)
-        for (volatile int j = 0; j < 1000; j++)
-            ;
     int16_t TFOC = (FACTORY_CALIBRATION_DATA[3] << 8) | FACTORY_CALIBRATION_DATA[2];  // Temperature First-order Coefficient
     int16_t TSOC = (FACTORY_CALIBRATION_DATA[5] << 8) | FACTORY_CALIBRATION_DATA[4];  // Temperature Second-order Coefficient
     uint16_t PSFB = (FACTORY_CALIBRATION_DATA[7] << 8) | FACTORY_CALIBRATION_DATA[6]; // Pressure Scale Factor Baseline
-    uint8_t arr3[12];
-    num_uint_ascii(PSFB, arr3);
-    lcd_clear(0x27);
-    lcd_print(0x27, arr3);
-    lcd_char(0x27, 0x20);
-    for (volatile int i = 0; i < 1000; i++)
-        for (volatile int j = 0; j < 1000; j++)
-            ;
 
     // Pressure Linearity Compensation Parameters
     uint16_t PLCP0 = (FACTORY_CALIBRATION_DATA[7] << 8) | FACTORY_CALIBRATION_DATA[6];
-    uint8_t arr00[12];
-    num_uint_ascii(PLCP0, arr00);
-    lcd_clear(0x27);
-    lcd_print(0x27, "PLCP:");
-    lcd_print(0x27, arr00);
-    lcd_char(0x27, 0x20);
-    for (volatile int i = 0; i < 1000; i++)
-        for (volatile int j = 0; j < 1000; j++)
-            ;
     int16_t PLCP[8];
     uint8_t index = 8;
     lcd_clear(0x27);
     for (volatile int i = 0; i < 8; i++)
     {
-        PLCP[i] = (FACTORY_CALIBRATION_DATA[index + 1] << 8) |
-                  FACTORY_CALIBRATION_DATA[index];
+        PLCP[i] = (FACTORY_CALIBRATION_DATA[index + 1] << 8) | FACTORY_CALIBRATION_DATA[index];
         index += 2;
-
-        uint8_t arr_x[12];
-        for (volatile int j = 0; j < 12; j++)
-        {
-            arr_x[j] = 0;
-        }
-        num_uint_ascii(PLCP[i], arr_x);
-        lcd_clear(0x27);
-        lcd_print(0x27, "PLCP:");
-        lcd_print(0x27, arr_x);
-        lcd_char(0x27, 0x20);
-        for (volatile int j = 0; j < 1000; j++)
-            for (volatile int k = 0; k < 1000; k++)
-                ;
     }
 
     int32_t raw_temp = (data[3] << 12) | (data[4] << 4) | ((data[5] & ~0x0F) >> 4);
     int32_t raw_pres = (data[0] << 12) | (data[1] << 4) | ((data[2] & ~0x0F) >> 4);
-    uint8_t arr[12];
-    num_uint_ascii(raw_pres, arr);
-    lcd_clear(0x27);
-    lcd_print(0x27, arr);
-    lcd_char(0x27, 0x20);
-    for (volatile int i = 0; i < 1000; i++)
-        for (volatile int j = 0; j < 1000; j++)
-            ;
 
     int32_t var1 = ((((raw_temp >> 3) - ((int32_t)TSFB << 1))) * (int32_t)TFOC) >> 11;
     int32_t var2 = (((((raw_temp >> 4) - (int32_t)TSFB) * ((raw_temp >> 4) - (int32_t)TSFB)) >> 12) * (int32_t)TSOC) >> 14;
@@ -116,30 +66,17 @@ void bmp280_read(uint8_t *FACTORY_CALIBRATION_DATA, float *pres, float *temp)
     var2_p = var2_p + ((var1_p * (int64_t)PLCP[3]) << 17);
     var2_p = var2_p + (((int64_t)PLCP[2]) << 35);
 
-    var1_p = ((var1_p * var1_p * (int64_t)PLCP[1]) >> 8) +
-             ((var1_p * (int64_t)PLCP[0]) << 12);
+    var1_p = ((var1_p * var1_p * (int64_t)PLCP[1]) >> 8) + ((var1_p * (int64_t)PLCP[0]) << 12);
 
     var1_p = (((((int64_t)1) << 47) + var1_p) * (int64_t)PLCP0) >> 33;
 
     if (var1_p != 0)
     {
         p = 1048576 - raw_pres;
-
         p = (((p << 31) - var2_p) * 3125) / var1_p;
-
         var1_p = ((int64_t)PLCP[7] * (p >> 13) * (p >> 13)) >> 25;
         var2_p = ((int64_t)PLCP[6] * p) >> 19;
-
         p = ((p + var1_p + var2_p) >> 8) + (((int64_t)PLCP[5]) << 4);
-        uint8_t arr000[64];
-        num_uint_ascii(p, arr000);
-        lcd_clear(0x27);
-        lcd_print(0x27, "P:");
-        lcd_print(0x27, arr000);
-        lcd_char(0x27, 0x20);
-        for (volatile int i = 0; i < 1000; i++)
-            for (volatile int j = 0; j < 1000; j++)
-                ;
 
         *pres = (float)p / 25600.0f;
     }

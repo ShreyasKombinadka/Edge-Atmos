@@ -28,7 +28,7 @@ int main(void)
         float aht_temp = 0;
         float bmp_temp = 0;
         float humi = 0;
-        uint32_t pres = 0;
+        float pres = 0;
         aht10_read(&aht_temp, &humi);
         bmp280_read(FACTORY_CALIBRATION_DATA, &pres, &bmp_temp);
 
@@ -39,22 +39,9 @@ int main(void)
         num_4digi_ascii(aht_temp, aht_temp_char_arr);
         num_4digi_ascii(bmp_temp, bmp_temp_char_arr);
         num_4digi_ascii(humi, humi_char_arr);
-        num_uint_ascii(pres, pres_char_arr);
+        num_4digi_ascii(pres, pres_char_arr);
 
         lcd_clear(lcd_addr);
-
-        lcd_print(lcd_addr, "Temp: ");
-        lcd_print(lcd_addr, aht_temp_char_arr);
-        lcd_char(lcd_addr, 0xDF);
-        lcd_char(lcd_addr, 'C');
-
-        lcd_row2(lcd_addr);
-        lcd_print(lcd_addr, "Humi: ");
-        lcd_print(lcd_addr, humi_char_arr);
-        lcd_char(lcd_addr, '%');
-
-        for (volatile int i = 0; i < 1000000; i++)
-            ;
 
         lcd_clear(lcd_addr);
         lcd_print(lcd_addr, "Pres: ");
