@@ -109,17 +109,20 @@ void lcd_debug(uint8_t addr, uint8_t *char_addr)
 void lcd_clear(uint8_t addr)
 {
     i2c1_wake(addr);
-
     lcd_w1byte(0x01, 0);
-
     i2c1_stop();
 }
 
 void lcd_row2(uint8_t addr)
 {
     i2c1_wake(addr);
-
     lcd_w1byte(0xC0, 0);
+    i2c1_stop();
+}
 
+void lcd_space(uint8_t addr)
+{
+    i2c1_wake(addr);
+    lcd_w1byte(0x20, 0);
     i2c1_stop();
 }

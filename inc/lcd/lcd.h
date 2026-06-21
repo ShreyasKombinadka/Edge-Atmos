@@ -12,6 +12,7 @@ void lcd_print(uint8_t addr, uint8_t *char_addr);
 void lcd_debug(uint8_t addr, uint8_t *char_addr);
 void lcd_clear(uint8_t addr);
 void lcd_row2(uint8_t addr);
+void lcd_space(uint8_t addr);
 
 #endif
 
