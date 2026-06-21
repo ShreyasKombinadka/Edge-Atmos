@@ -43,7 +43,6 @@ void bmp280_read(uint8_t *FACTORY_CALIBRATION_DATA, float *pres, float *temp)
     uint16_t PLCP0 = (FACTORY_CALIBRATION_DATA[7] << 8) | FACTORY_CALIBRATION_DATA[6];
     int16_t PLCP[8];
     uint8_t index = 8;
-    lcd_clear(0x27);
     for (volatile int i = 0; i < 8; i++)
     {
         PLCP[i] = (FACTORY_CALIBRATION_DATA[index + 1] << 8) | FACTORY_CALIBRATION_DATA[index];
