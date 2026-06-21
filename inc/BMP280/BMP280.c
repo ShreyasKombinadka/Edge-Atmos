@@ -29,9 +29,7 @@ void bmp280_read(uint8_t *FACTORY_CALIBRATION_DATA, float *pres, float *temp)
     uint8_t data[6];
 
     i2c1_wake(0x76);
-
     i2c1_w1byte(0xF7);
-
     i2c1_rsnbyte(0x76, data, 6);
 
     uint16_t TSFB = (FACTORY_CALIBRATION_DATA[1] << 8) | FACTORY_CALIBRATION_DATA[0]; // Temperature Scale Factor Baseline
