@@ -35,7 +35,7 @@ void num_uint_ascii(unsigned int num, uint8_t *num_ascii)
     num_ascii[count] = '\0';
 }
 
-void num_4digi_ascii(float num, uint8_t *num_ascii)
+void num_float4digi_ascii(float num, uint8_t *num_ascii)
 {
     unsigned int num_temp = 0;
     int point = 0;

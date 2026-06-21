@@ -28,14 +28,14 @@ int main(void)
         float aht_temp = 0;
         float bmp_temp = 0;
         float humi = 0;
-        float pres = 0;
+        uint32_t pres = 0;
         aht10_read(&aht_temp, &humi);
         bmp280_read(FACTORY_CALIBRATION_DATA, &pres, &bmp_temp);
 
         uint8_t aht_temp_char_arr[6];
         uint8_t bmp_temp_char_arr[6];
         uint8_t humi_char_arr[6];
-        uint8_t pres_char_arr[6];
+        uint8_t pres_char_arr[12];
         num_4digi_ascii(aht_temp, aht_temp_char_arr);
         num_4digi_ascii(bmp_temp, bmp_temp_char_arr);
         num_4digi_ascii(humi, humi_char_arr);

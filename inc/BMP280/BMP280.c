@@ -30,8 +30,6 @@ void bmp280_read(uint8_t *FACTORY_CALIBRATION_DATA, uint32_t *pres, float *temp)
 
     i2c1_rsnbyte(0x76, data, 6);
 
-    i2c1_stop();
-
     uint16_t TSFB = (FACTORY_CALIBRATION_DATA[1] << 8) | FACTORY_CALIBRATION_DATA[0]; // Temperature Scale Factor Baseline
     int16_t TFOC = (FACTORY_CALIBRATION_DATA[3] << 8) | FACTORY_CALIBRATION_DATA[2];  // Temperature First-order Coefficient
     int16_t TSOC = (FACTORY_CALIBRATION_DATA[5] << 8) | FACTORY_CALIBRATION_DATA[4];  // Temperature Second-order Coefficient
@@ -60,9 +58,9 @@ void bmp280_read(uint8_t *FACTORY_CALIBRATION_DATA, uint32_t *pres, float *temp)
     var1 = (((int32_t)PLCP[4] * ((var1 >> 2) * (var1 >> 2) >> 11)) >> 2) + (((int32_t)PLCP[3] * var1) >> 4);
     var1 = var1 + ((int32_t)PLCP[2] << 13);
     int32_t p_raw = 1048576 - raw_pres;
-    p_raw = (((p_raw << 15) - var2) * 3125) / var1;
     if (var1 != 0)
     {
+        p_raw = (((p_raw << 15) - var2) * 3125) / var1;
         var1 = ((int32_t)PLCP[7] * (p_raw >> 13) * (p_raw >> 13)) >> 25;
         var2 = ((int32_t)PLCP[6] * p_raw) >> 19;
         *pres = (uint32_t)(((p_raw + var1 + var2) >> 8) + ((int32_t)PLCP[5] << 4));
