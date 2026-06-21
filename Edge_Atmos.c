@@ -59,7 +59,7 @@ int main(void)
         lcd_clear(lcd_addr);
         lcd_print(lcd_addr, "Pres: ");
         lcd_print(lcd_addr, pres_char_arr);
-        lcd_print(lcd_addr, "psi");
+        lcd_print(lcd_addr, "hPa");
 
         lcd_row2(lcd_addr);
         lcd_print(lcd_addr, "Temp: ");
