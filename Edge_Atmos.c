@@ -43,6 +43,19 @@ int main(void)
 
         lcd_clear(lcd_addr);
 
+        lcd_print(lcd_addr, "Temp: ");
+        lcd_print(lcd_addr, aht_temp_char_arr);
+        lcd_char(lcd_addr, 0xDF);
+        lcd_char(lcd_addr, 'C');
+
+        lcd_row2(lcd_addr);
+        lcd_print(lcd_addr, "Humi: ");
+        lcd_print(lcd_addr, humi_char_arr);
+        lcd_char(lcd_addr, '%');
+
+        for (volatile int i = 0; i < 1000000; i++)
+            ;
+
         lcd_clear(lcd_addr);
         lcd_print(lcd_addr, "Pres: ");
         lcd_print(lcd_addr, pres_char_arr);
