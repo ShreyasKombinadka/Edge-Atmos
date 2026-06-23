@@ -146,10 +146,10 @@ void spi1_nss(uint8_t PIN, uint8_t BLOCK, uint8_t SELECT) // Negative slave sele
     }
 }
 
-void spi1_8wr1byte(uint8_t *DATA)
+void spi1_8wr1byte(uint8_t PIN, uint8_t BLOCK, uint8_t *DATA)
 {
     SPI1->CR1 &= ~(1 << 11); // 8bit mode
-    spi1_nss(4, 'A', 1);     // Select slave
+    spi1_nss(PIN, BLOCK, 1); // Select slave
 
     while (!(SPI1->SR & (1 << 1))) // Wait till the Tx buffer is empty
         ;
@@ -162,5 +162,5 @@ void spi1_8wr1byte(uint8_t *DATA)
     while (SPI1->SR & (1 << 7)) // Wait till SPI is completed and DR is free
         ;
 
-    spi1_nss(4, 'A', 0); // De-select slave
+    spi1_nss(PIN, BLOCK, 0); // De-select slave
 }
