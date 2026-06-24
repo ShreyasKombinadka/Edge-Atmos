@@ -1,5 +1,5 @@
 #include "BMP280.h"
-#include "../i2c/i2c.h"
+#include "../I2C_MS/I2C1.h"
 #include <stdint.h>
 
 void bmp280_init(uint8_t *FACTORY_CALIBRATION_DATA)

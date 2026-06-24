@@ -1,18 +1,20 @@
-#ifndef LCD_H
-#define LCD_H
+#ifndef LCD1602_H
+#define LCD1602_H
 
 #include <stdint.h>
 
-void lcd_init(uint8_t addr);
-void lcd_w1byte(uint8_t data, uint8_t rs);
-void lcd_wwscmd(uint8_t addr, uint8_t cmd);
-void lcd_char(uint8_t addr, uint8_t data);
-void lcd_wws8byte(uint8_t addr, uint64_t data, int n);
-void lcd_print(uint8_t addr, uint8_t *char_addr);
-void lcd_debug(uint8_t addr, uint8_t *char_addr);
-void lcd_clear(uint8_t addr);
-void lcd_row2(uint8_t addr);
-void lcd_space(uint8_t addr);
+#define LCD_ADDR 0X27
+
+void lcd1602_init(void);
+void lcd1602_w1byte(uint8_t data, uint8_t rs);
+void lcd1602_wwscmd(uint8_t cmd);
+void lcd1602_char(uint8_t data);
+void lcd1602_wws8byte(uint64_t data, int n);
+void lcd1602_print(uint8_t *char_addr);
+void lcd1602_debug(uint8_t *char_addr);
+void lcd1602_clear(void);
+void lcd1602_row2(void);
+void lcd1602_space(void);
 
 #endif
 

@@ -1,4 +1,4 @@
-#include "spi.h"
+#include "SPI1.h"
 #include <stdint.h>
 
 #define STM32F103xB

@@ -1,5 +1,5 @@
 #include "AHT10.h"
-#include "../i2c/i2c.h"
+#include "../I2C_MS/I2C1.h"
 #include <stdint.h>
 
 void aht10_init(void)

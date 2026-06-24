@@ -1,5 +1,5 @@
-#ifndef SPI_H
-#define SPI_H
+#ifndef SPI1_H
+#define SPI1_H
 
 #include <stdint.h>
 

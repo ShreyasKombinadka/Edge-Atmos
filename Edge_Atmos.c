@@ -1,20 +1,18 @@
 #include <stdint.h>
-#include "./i2c/i2c.h"
-#include "./ascii/ascii.h"
-#include "./lcd/lcd.h"
-#include "./AHT10/AHT10.h"
-#include "./BMP280/BMP280.h"
+#include "./I2C_MS/I2C1.h"
+#include "./ASCII_MS/ASCII.h"
+#include "./LCD1602_MS/LCD1602.h"
+#include "./AHT10_MS/AHT10.h"
+#include "./BMP280_MS/BMP280.h"
 
 #define STM32F103xB
 #include "./STM32F103_CMSIS/stm32f1xx.h"
 
 int main(void)
 {
-    uint8_t lcd_addr = 0x27;
-
     i2c1_init();
-    lcd_init(lcd_addr);
-    lcd_print(lcd_addr, "Edge Atmos");
+    lcd1602_init();
+    lcd1602_print("Edge Atmos");
     for (volatile int i = 0; i < 1000000; i++)
         ;
 
@@ -41,31 +39,31 @@ int main(void)
         num_4digi_ascii(humi, humi_char_arr);
         num_4digi_ascii(pres, pres_char_arr);
 
-        lcd_clear(lcd_addr);
+        lcd_clear();
 
-        lcd_print(lcd_addr, "Temp: ");
-        lcd_print(lcd_addr, aht_temp_char_arr);
-        lcd_char(lcd_addr, 0xDF);
-        lcd_char(lcd_addr, 'C');
+        lcd1602_print("Temp: ");
+        lcd1602_print(aht_temp_char_arr);
+        lcd1602_char(0xDF);
+        lcd1602_char('C');
 
-        lcd_row2(lcd_addr);
-        lcd_print(lcd_addr, "Humi: ");
-        lcd_print(lcd_addr, humi_char_arr);
-        lcd_char(lcd_addr, '%');
+        lcd1602_row2();
+        lcd1602_print("Humi: ");
+        lcd1602_print(humi_char_arr);
+        lcd1602_char('%');
 
         for (volatile int i = 0; i < 1000000; i++)
             ;
 
-        lcd_clear(lcd_addr);
-        lcd_print(lcd_addr, "Pres: ");
-        lcd_print(lcd_addr, pres_char_arr);
-        lcd_print(lcd_addr, "hPa");
+        lcd1602_clear();
+        lcd1602_print("Pres: ");
+        lcd1602_print(pres_char_arr);
+        lcd1602_print("hPa");
 
-        lcd_row2(lcd_addr);
-        lcd_print(lcd_addr, "Temp: ");
-        lcd_print(lcd_addr, bmp_temp_char_arr);
-        lcd_char(lcd_addr, 0xDF);
-        lcd_char(lcd_addr, 'C');
+        lcd1602_row2();
+        lcd1602_print("Temp: ");
+        lcd1602_print(bmp_temp_char_arr);
+        lcd1602_char(0xDF);
+        lcd1602_char('C');
 
         for (volatile int i = 0; i < 1000000; i++)
             ;

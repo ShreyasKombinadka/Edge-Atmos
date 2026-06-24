@@ -1,4 +1,4 @@
-#include "i2c.h"
+#include "I2C1.h"
 #include <stdint.h>
 
 #define STM32F103xB
