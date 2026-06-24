@@ -4,8 +4,7 @@
 #define STM32F103xB
 #include "stm32f1xx.h"
 
-// SPI1 Initialisation
-void spi1_init(uint8_t CPOL_CHPA, uint8_t BR)
+void spi1_init(uint8_t CPOL_CHPA, uint8_t BR) // SPI1 Initialisation
 {
     RCC->APB2ENR |= (1 << 12); // Enable SPI1
 
@@ -20,7 +19,7 @@ void spi1_init(uint8_t CPOL_CHPA, uint8_t BR)
     SPI1->CR1 = (1 << 6);  // SPI enable
 }
 
-void spi1_nss(uint8_t PIN, uint8_t BLOCK, uint8_t SELECT) // Negative slave select
+void spi1_slaveset(uint8_t PIN, uint8_t BLOCK) // Add slave select pin
 {
     switch (BLOCK)
     {
@@ -39,11 +38,6 @@ void spi1_nss(uint8_t PIN, uint8_t BLOCK, uint8_t SELECT) // Negative slave sele
                 GPIOA->CRH &= ~(0xF << ((PIN - 8) * 4)); // Clear configuration
                 GPIOA->CRH |= (2 << ((PIN - 8) * 4));    // Set as output at 2MHz push pull mode
             }
-
-            if (SELECT)
-                GPIOA->BRR = (1 << PIN); // Reset PIN
-            else
-                GPIOA->BSRR = (1 << PIN); // Set PIN
         }
 
         break;
@@ -63,11 +57,6 @@ void spi1_nss(uint8_t PIN, uint8_t BLOCK, uint8_t SELECT) // Negative slave sele
                 GPIOB->CRH &= ~(0xF << ((PIN - 8) * 4)); // Clear configuration
                 GPIOB->CRH |= (2 << ((PIN - 8) * 4));    // Set as output at 2MHz push pull mode
             }
-
-            if (SELECT)
-                GPIOB->BRR = (1 << PIN); // Reset PIN
-            else
-                GPIOB->BSRR = (1 << PIN); // Set PIN
         }
 
         break;
@@ -87,11 +76,6 @@ void spi1_nss(uint8_t PIN, uint8_t BLOCK, uint8_t SELECT) // Negative slave sele
                 GPIOC->CRH &= ~(0xF << ((PIN - 8) * 4)); // Clear configuration
                 GPIOC->CRH |= (2 << ((PIN - 8) * 4));    // Set as output at 2MHz push pull mode
             }
-
-            if (SELECT)
-                GPIOC->BRR = (1 << PIN); // Reset PIN
-            else
-                GPIOC->BSRR = (1 << PIN); // Set PIN
         }
 
         break;
@@ -111,11 +95,6 @@ void spi1_nss(uint8_t PIN, uint8_t BLOCK, uint8_t SELECT) // Negative slave sele
                 GPIOD->CRH &= ~(0xF << ((PIN - 8) * 4)); // Clear configuration
                 GPIOD->CRH |= (2 << ((PIN - 8) * 4));    // Set as output at 2MHz push pull mode
             }
-
-            if (SELECT)
-                GPIOD->BRR = (1 << PIN); // Reset PIN
-            else
-                GPIOD->BSRR = (1 << PIN); // Set PIN
         }
 
         break;
@@ -135,7 +114,63 @@ void spi1_nss(uint8_t PIN, uint8_t BLOCK, uint8_t SELECT) // Negative slave sele
                 GPIOE->CRH &= ~(0xF << ((PIN - 8) * 4)); // Clear configuration
                 GPIOE->CRH |= (2 << ((PIN - 8) * 4));    // Set as output at 2MHz push pull mode
             }
+        }
 
+        break;
+    }
+}
+
+void spi1_slaveselect(uint8_t PIN, uint8_t BLOCK, uint8_t SELECT) // Slave selection
+{
+    switch (BLOCK)
+    {
+    case 'A': // GPIOA
+        if (PIN < 16)
+        {
+            if (SELECT)
+                GPIOA->BRR = (1 << PIN); // Reset PIN
+            else
+                GPIOA->BSRR = (1 << PIN); // Set PIN
+        }
+
+        break;
+
+    case 'B': // GPIOB
+        if (PIN < 16)
+        {
+            if (SELECT)
+                GPIOB->BRR = (1 << PIN); // Reset PIN
+            else
+                GPIOB->BSRR = (1 << PIN); // Set PIN
+        }
+
+        break;
+
+    case 'C': // GPIOC
+        if (PIN < 16)
+        {
+            if (SELECT)
+                GPIOC->BRR = (1 << PIN); // Reset PIN
+            else
+                GPIOC->BSRR = (1 << PIN); // Set PIN
+        }
+
+        break;
+
+    case 'D': // GPIOD
+        if (PIN < 16)
+        {
+            if (SELECT)
+                GPIOD->BRR = (1 << PIN); // Reset PIN
+            else
+                GPIOD->BSRR = (1 << PIN); // Set PIN
+        }
+
+        break;
+
+    case 'E': // GPIOE
+        if (PIN < 16)
+        {
             if (SELECT)
                 GPIOE->BRR = (1 << PIN); // Reset PIN
             else
@@ -146,21 +181,43 @@ void spi1_nss(uint8_t PIN, uint8_t BLOCK, uint8_t SELECT) // Negative slave sele
     }
 }
 
-void spi1_8wr1byte(uint8_t PIN, uint8_t BLOCK, uint8_t *DATA)
+void spi1_8wr1byte(uint8_t PIN, uint8_t BLOCK, uint8_t DATA) // SPI write and read 1byte
 {
-    SPI1->CR1 &= ~(1 << 11); // 8bit mode
-    spi1_nss(PIN, BLOCK, 1); // Select slave
+    SPI1->CR1 &= ~(1 << 11);         // 8bit mode
+    spi1_slaveselect(PIN, BLOCK, 1); // Select slave
 
     while (!(SPI1->SR & (1 << 1))) // Wait till the Tx buffer is empty
         ;
-    SPI1->DR = *DATA;       // Load data to be send
+    SPI1->DR = DATA; // Load data to DR to transmit
+
     while (!(SPI1->SR & 1)) // Wait till the Rx buffer is not empty
         ;
-
-    *DATA = SPI1->DR; // Load the received data
+    DATA = SPI1->DR; // Load the received data from DR
 
     while (SPI1->SR & (1 << 7)) // Wait till SPI is completed and DR is free
         ;
 
-    spi1_nss(PIN, BLOCK, 0); // De-select slave
+    spi1_slaveselect(PIN, BLOCK, 0); // De-select slave
+}
+
+void spi1_8wrnbyte(uint8_t PIN, uint8_t BLOCK, uint8_t *DATA, int n) // SPI write and read nbyte
+{
+    SPI1->CR1 &= ~(1 << 11);         // 8bit mode
+    spi1_slaveselect(PIN, BLOCK, 1); // Select slave
+
+    for (volatile int i = 0; i < n; i++)
+    {
+        while (!(SPI1->SR & (1 << 1))) // Wait till the Tx buffer is empty
+            ;
+        SPI1->DR = DATA[i]; // Load data to DR to transmit
+
+        while (!(SPI1->SR & 1)) // Wait till the Rx buffer is not empty
+            ;
+        DATA[i] = SPI1->DR; // Load the received data from DR
+    }
+
+    while (SPI1->SR & (1 << 7)) // Wait till SPI is completed and DR is free
+        ;
+
+    spi1_slaveselect(PIN, BLOCK, 0); // De-select slave
 }
