@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 void bmp280_init(uint8_t *FACTORY_CALIBRATION_DATA);
-void bmp280_read(uint8_t *FACTORY_CALIBRATION_DATA, uint32_t *pres, float *temp);
+void bmp280_read(uint8_t *FACTORY_CALIBRATION_DATA, float *pres, float *temp);
 
 #endif
 

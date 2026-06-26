@@ -4,6 +4,7 @@
 #include "./LCD1602_MS/LCD1602.h"
 #include "./AHT10_MS/AHT10.h"
 #include "./BMP280_MS/BMP280.h"
+#include "./W25Q32_MS/W25Q32.h"
 
 #define STM32F103xB
 #include "./STM32F103_CMSIS/stm32f1xx.h"
@@ -21,6 +22,15 @@ int main(void)
     uint8_t FACTORY_CALIBRATION_DATA[24];
     bmp280_init(FACTORY_CALIBRATION_DATA);
 
+    lcd1602_clear();
+    lcd1602_print("Stored data, ");
+    float xyz = w25q32_r1byte(4, 'A', 0x666);
+    uint8_t xyz_char_arr[12];
+    num_float4digi_ascii(xyz, xyz_char_arr);
+    lcd1602_print(xyz_char_arr);
+    for (volatile int i = 0; i < 1000000; i++)
+        ;
+
     while (1)
     {
         float aht_temp = 0;
@@ -34,12 +44,12 @@ int main(void)
         uint8_t bmp_temp_char_arr[6];
         uint8_t humi_char_arr[6];
         uint8_t pres_char_arr[12];
-        num_4digi_ascii(aht_temp, aht_temp_char_arr);
-        num_4digi_ascii(bmp_temp, bmp_temp_char_arr);
-        num_4digi_ascii(humi, humi_char_arr);
-        num_4digi_ascii(pres, pres_char_arr);
+        num_float4digi_ascii(aht_temp, aht_temp_char_arr);
+        num_float4digi_ascii(bmp_temp, bmp_temp_char_arr);
+        num_float4digi_ascii(humi, humi_char_arr);
+        num_float4digi_ascii(pres, pres_char_arr);
 
-        lcd_clear();
+        lcd1602_clear();
 
         lcd1602_print("Temp: ");
         lcd1602_print(aht_temp_char_arr);
@@ -64,6 +74,14 @@ int main(void)
         lcd1602_print(bmp_temp_char_arr);
         lcd1602_char(0xDF);
         lcd1602_char('C');
+
+        lcd1602_clear();
+        lcd1602_print("Writing, ");
+        lcd1602_print(aht_temp_char_arr);
+        lcd1602_print("to mem 0x666");
+        w25q32_w1byte(4, 'A', 0x666, aht_temp);
+        lcd1602_clear();
+        lcd1602_print("Completed..");
 
         for (volatile int i = 0; i < 1000000; i++)
             ;
