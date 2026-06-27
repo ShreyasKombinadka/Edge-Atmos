@@ -4,7 +4,7 @@
 #define STM32F103xB
 #include "stm32f1xx.h"
 
-void spi1_init(uint8_t CPOL_CPHA, uint8_t BR) // SPI1 Initialisation
+void spi1_init(uint8_t CPOL_CPHA, uint8_t BR) // SPI1 Initialisation00
 {
     RCC->APB2ENR |= (1 << 12); // Enable SPI1
     RCC->APB2ENR |= (1 << 2);  // Enable GPIOA block
@@ -14,12 +14,12 @@ void spi1_init(uint8_t CPOL_CPHA, uint8_t BR) // SPI1 Initialisation
     GPIOA->CRL |= (0x4 << 24);                  // pin 6(MISO1) as floating input mode
     GPIOA->CRL |= (0xB << 28) | (0xB << 20);    // pin 5 & 7 (SCK1 & MOSI1) as 50MHz alternate push pull mode
 
-    SPI1->CR1 = (1 << 2);    // Master mode
-    SPI1->CR1 = (3 << 8);    // Ignore NSS and assume HIGH internally
-    SPI1->CR1 = CPOL_CPHA;   // CLK and Data read write configuration
-    SPI1->CR1 = (BR << 3);   // CLK devider select for SPI CLK
+    SPI1->CR1 |= (1 << 2);   // Master mode
+    SPI1->CR1 |= (3 << 8);   // Ignore NSS and assume HIGH internally
+    SPI1->CR1 |= CPOL_CPHA;  // CLK and Data read write configuration
+    SPI1->CR1 |= (BR << 3);  // CLK devider select for SPI CLK
     SPI1->CR1 &= ~(1 << 11); // 8bit mode
-    SPI1->CR1 = (1 << 6);    // SPI enable
+    SPI1->CR1 |= (1 << 6);   // SPI enable
 }
 
 void spi1_slaveset(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK) // Add slave select pin
@@ -187,6 +187,7 @@ void spi1_slaveselect(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint8_t SELE
 void spi1_8w1byte(uint8_t DATA_W) // SPI write 1byte
 {
     (void)SPI1->SR; // Clear flags
+    (void)SPI1->DR; // Clear DR
 
     while (!(SPI1->SR & (1 << 1))) // Wait till the Tx buffer is empty
         ;
@@ -194,7 +195,7 @@ void spi1_8w1byte(uint8_t DATA_W) // SPI write 1byte
 
     while (!(SPI1->SR & 1)) // Wait till the Rx buffer is not empty
         ;
-    (void)SPI1->DR; // Ignore the received data in DR by doing a void read to clear flags
+    (void)SPI1->DR; // Clear DR
 
     while (SPI1->SR & (1 << 7)) // Wait till SPI is completed and DR is free
         ;
@@ -203,6 +204,7 @@ void spi1_8w1byte(uint8_t DATA_W) // SPI write 1byte
 uint8_t spi1_8r1byte() // SPI read 1byte
 {
     (void)SPI1->SR; // Clear flags
+    (void)SPI1->DR; // Clear DR
 
     while (!(SPI1->SR & (1 << 1))) // Wait till the Tx buffer is empty
         ;
@@ -218,9 +220,10 @@ uint8_t spi1_8r1byte() // SPI read 1byte
     return temp; // Return the recived data
 }
 
-void spi1_8wr1byte(uint8_t DATA_W, uint8_t DATA_R) // SPI write and read 1byte
+uint8_t spi1_8wr1byte(uint8_t DATA_W) // SPI write and read 1byte
 {
     (void)SPI1->SR; // Clear flags
+    (void)SPI1->DR; // Clear DR
 
     while (!(SPI1->SR & (1 << 1))) // Wait till the Tx buffer is empty
         ;
@@ -228,15 +231,18 @@ void spi1_8wr1byte(uint8_t DATA_W, uint8_t DATA_R) // SPI write and read 1byte
 
     while (!(SPI1->SR & 1)) // Wait till the Rx buffer is not empty
         ;
-    DATA_R = SPI1->DR; // Load the received data from DR
+    uint8_t DATA_R = SPI1->DR; // Load the received data from DR
 
     while (SPI1->SR & (1 << 7)) // Wait till SPI is completed and DR is free
         ;
+
+    return DATA_R;
 }
 
-void spi1_8wr1bytesd(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint8_t DATA_W, uint8_t DATA_R) // SPI write and read 1byte with slave selct and de-selct
+uint8_t spi1_8wr1bytesd(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint8_t DATA_W) // SPI write and read 1byte with slave selct and de-selct
 {
     (void)SPI1->SR; // Clear flags
+    (void)SPI1->DR; // Clear DR
 
     spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 1); // Select slave
 
@@ -246,17 +252,20 @@ void spi1_8wr1bytesd(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint8_t DATA_
 
     while (!(SPI1->SR & 1)) // Wait till the Rx buffer is not empty
         ;
-    DATA_R = SPI1->DR; // Load the received data from DR
+    uint8_t DATA_R = SPI1->DR; // Load the received data from DR
 
     while (SPI1->SR & (1 << 7)) // Wait till SPI is completed and DR is free
         ;
 
     spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 0); // De-select slave
+
+    return DATA_R;
 }
 
 void spi1_8wrnbytesd(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint8_t *DATA_W, uint8_t *DATA_R, int n) // SPI write and read nbyte with slave selct and de-selct
 {
     (void)SPI1->SR; // Clear flags
+    (void)SPI1->DR; // Clear DR
 
     spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 1); // Select slave
 
