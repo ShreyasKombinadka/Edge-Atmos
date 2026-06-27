@@ -24,7 +24,8 @@ int main(void)
 
     lcd1602_clear();
     lcd1602_print("Stored data, ");
-    float xyz = w25q32_r1byte(4, 'A', 0x666);
+    float xyz = 0.0;
+    w25q32_r1byte(4, 'A', 0x666, &xyz);
     uint8_t xyz_char_arr[12];
     num_float4digi_ascii(xyz, xyz_char_arr);
     lcd1602_print(xyz_char_arr);
@@ -79,7 +80,7 @@ int main(void)
         lcd1602_print("Writing, ");
         lcd1602_print(aht_temp_char_arr);
         lcd1602_print("to mem 0x666");
-        w25q32_w1byte(4, 'A', 0x666, aht_temp);
+        w25q32_w1byte(4, 'A', 0x666, &aht_temp);
         lcd1602_clear();
         lcd1602_print("Completed..");
 
