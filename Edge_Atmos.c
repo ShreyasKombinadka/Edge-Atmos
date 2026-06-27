@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "./I2C_MS/I2C1.h"
+#include "./SPI_MS/SPI1.h"
 #include "./ASCII_MS/ASCII.h"
 #include "./LCD1602_MS/LCD1602.h"
 #include "./AHT10_MS/AHT10.h"
@@ -12,6 +13,7 @@
 int main(void)
 {
     i2c1_init();
+    spi1_init(0, 2);
     lcd1602_init();
     lcd1602_print("Edge Atmos");
     for (volatile int i = 0; i < 1000000; i++)
@@ -25,7 +27,7 @@ int main(void)
     lcd1602_clear();
     lcd1602_print("Stored data, ");
     float xyz = 0.0;
-    w25q32_read(4, 'A', 0x666, &xyz, 4);
+    w25q32_read(4, 'A', 0x666, (uint8_t *)&xyz, 4);
     uint8_t xyz_char_arr[12];
     num_float4digi_ascii(xyz, xyz_char_arr);
     lcd1602_print(xyz_char_arr);
@@ -80,7 +82,7 @@ int main(void)
         lcd1602_print("Writing, ");
         lcd1602_print(aht_temp_char_arr);
         lcd1602_print("to mem 0x666");
-        w25q32_write(4, 'A', 0x666, &aht_temp, 4);
+        w25q32_write(4, 'A', 0x666, (uint8_t *)&aht_temp, 4);
         lcd1602_clear();
         lcd1602_print("Completed..");
 
