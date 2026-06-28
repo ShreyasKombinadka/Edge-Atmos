@@ -8,9 +8,7 @@ void w25q32_read(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint32_t MEM_LOCA
 
     spi1_8w1byte(0x03); // Read enable cmd byte
     for (volatile int i = 0; i < 3; i++)
-    {
         spi1_8w1byte((uint8_t)(MEM_LOCATION_24 >> (8 * (2 - i)))); // Send 24bit memroy adress with MSB first
-    }
 
     // Read data
     volatile uint8_t byte_count = 0;
@@ -25,11 +23,14 @@ void w25q32_read(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint32_t MEM_LOCA
 
 void w25q32_write(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint32_t MEM_LOCATION_24, uint8_t *DATA, uint8_t DATA_SIZE_BYTE) // Flash memory write
 {
-    volatile uint8_t byte_count = 0;
+    volatile uint8_t byte_count = 0;  // Bytes sent
+    volatile uint8_t page_switch = 0; // Page switch flag
     while (byte_count < DATA_SIZE_BYTE)
     {
-        if ((byte_count + (MEM_LOCATION_24 & 0xFF) >= 0xFE) || byte_count == 0)
+        if (byte_count == 0 || page_switch == 1)
         {
+            page_switch = 0; // Clear page switch flag
+
             // Write enable
             spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 1); // Select slave device
             spi1_8w1byte(0x06);                                // Write enable cmd byte
@@ -39,13 +40,18 @@ void w25q32_write(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint32_t MEM_LOC
             spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 1); // Select slave device
             spi1_8w1byte(0x02);                                // Page programm cmd
             for (volatile int i = 0; i < 3; i++)
-                spi1_8w1byte((uint8_t)((MEM_LOCATION_24 + byte_count) >> (8 * (2 - i)))); // Send 24bit memroy adress with MSB first
+                if (byte_count == 0)
+                    spi1_8w1byte((uint8_t)((MEM_LOCATION_24) >> (8 * (2 - i)))); // Send 24bit memroy adress with MSB first
+                else
+                    spi1_8w1byte((uint8_t)((MEM_LOCATION_24 + byte_count) >> (8 * (2 - i)))); // Send 24bit memroy adress of next page with MSB first
         }
 
         spi1_8w1byte(DATA[byte_count]); // Send the byte to write
+        if (((byte_count + MEM_LOCATION_24) & 0xFF) >= 0xFF)
+            page_switch = 1;
         byte_count++;
 
-        if (byte_count + (MEM_LOCATION_24 & 0xFF) >= 0xFE || byte_count >= DATA_SIZE_BYTE)
+        if (page_switch == 1 || byte_count >= DATA_SIZE_BYTE)
         {
             spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 0); // De-select slave device
             // Status Register 1 check
