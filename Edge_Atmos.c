@@ -26,23 +26,8 @@ int main(void)
     bmp280_init(FACTORY_CALIBRATION_DATA);
 
     // Flash test
-    lcd1602_clear();
-    lcd1602_print("JEDEC: ");
-    uint8_t JEDEC[3];
-    w25q32_jedec(4, 'A', JEDEC);
-    uint8_t JEDEC0_char_arr[10];
-    num_uint_ascii(JEDEC[0], JEDEC0_char_arr);
-    lcd1602_print(JEDEC0_char_arr);
-    lcd1602_print(".");
-    uint8_t JEDEC1_char_arr[10];
-    num_uint_ascii(JEDEC[1], JEDEC1_char_arr);
-    lcd1602_print(JEDEC1_char_arr);
-    lcd1602_print(".");
-    uint8_t JEDEC2_char_arr[10];
-    num_uint_ascii(JEDEC[2], JEDEC2_char_arr);
-    lcd1602_print(JEDEC2_char_arr);
-    for (volatile int i = 0; i < 1000000; i++)
-        ;
+    w25q32_sectorclear(4, 'A', 0);
+    w25q32_write(4, 'A', 0, "Hi", 2);
 
     while (1)
     {
@@ -86,6 +71,15 @@ int main(void)
         lcd1602_print(bmp_temp_char_arr);
         lcd1602_char(0xDF);
         lcd1602_char('C');
+        for (volatile int i = 0; i < 1000000; i++)
+            ;
+
+        // Flash test
+        uint8_t arr[3];
+        arr[2] = '\0';
+        w25q32_read(4, 'A', 0, arr, 2);
+        lcd1602_clear();
+        lcd1602_print(arr);
         for (volatile int i = 0; i < 1000000; i++)
             ;
     }
