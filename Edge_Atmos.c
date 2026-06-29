@@ -27,7 +27,7 @@ int main(void)
 
     // Flash test
     w25q32_sectorclear(4, 'A', 0);
-    w25q32_write(4, 'A', 0, "Hi", 2);
+    w25q32_write(4, 'A', 0, "Hellow World...!", 16);
 
     while (1)
     {
@@ -75,9 +75,9 @@ int main(void)
             ;
 
         // Flash test
-        uint8_t arr[3];
-        arr[2] = '\0';
-        w25q32_read(4, 'A', 0, arr, 2);
+        uint8_t arr[17];
+        arr[16] = '\0';
+        w25q32_read(4, 'A', 0, arr, 16);
         lcd1602_clear();
         lcd1602_print(arr);
         for (volatile int i = 0; i < 1000000; i++)
