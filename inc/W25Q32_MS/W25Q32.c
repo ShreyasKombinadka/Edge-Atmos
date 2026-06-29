@@ -72,3 +72,43 @@ void w25q32_write(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint32_t MEM_LOC
 
     spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 0); // De-select slave device
 }
+
+void w25q32_sectorclear(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint32_t MEM_LOCATION_24) // Sector clear
+{
+    // Write enable
+    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 1); // Select slave device
+    spi1_8w1byte(0x06);                                // Write enable cmd byte
+    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 0); // De-select slave device
+
+    // Sector clear
+    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 1); // Select slave device
+    spi1_8w1byte(0x20);                                // Sector clear cmd byte
+    for (volatile int i = 0; i < 3; i++)
+        spi1_8w1byte((uint8_t)(MEM_LOCATION_24 >> (8 * (2 - i)))); // Send 24bit memroy adress with MSB first
+    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 0);             // De-select slave device
+
+    // Status Register 1 check
+    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 1); // Select slave device
+    spi1_8w1byte(0x05);                                // Read Status Register 1 cmd
+    uint8_t temp;
+    while (1) // Wait till the register write operation is finished
+    {
+        temp = spi1_8r1byte(); // Read status register values
+
+        if (!(temp & 1)) // Check if the busy flag is cleared
+            break;
+    }
+    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 0); // De-select slave device
+}
+
+void w25q32_jedec(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint8_t *DATA) // JEDEC ID
+{
+    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 1); // Select slave device
+
+    spi1_8w1byte(0x9F); // JEDEC ID cmd
+    // Read data
+    for (volatile int i = 0; i < 3; i++) // Read 3 bytes
+        DATA[i] = spi1_8r1byte();
+
+    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 0); // De-select slave device
+}

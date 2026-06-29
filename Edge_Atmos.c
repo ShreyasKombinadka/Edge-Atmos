@@ -14,6 +14,7 @@ int main(void)
 {
     i2c1_init();
     spi1_init(0, 2);
+    spi1_slaveset(4, 'A');
     lcd1602_init();
     lcd1602_print("Edge Atmos");
     for (volatile int i = 0; i < 1000000; i++)
@@ -26,18 +27,22 @@ int main(void)
 
     // Flash test
     lcd1602_clear();
-    lcd1602_print("Stored data, ");
+    lcd1602_print("JEDEC: ");
+    uint8_t JEDEC[3];
+    w25q32_jedec(4, 'A', JEDEC);
+    uint8_t JEDEC0_char_arr[10];
+    num_uint_ascii(JEDEC[0], JEDEC0_char_arr);
+    lcd1602_print(JEDEC0_char_arr);
+    lcd1602_print(".");
+    uint8_t JEDEC1_char_arr[10];
+    num_uint_ascii(JEDEC[1], JEDEC1_char_arr);
+    lcd1602_print(JEDEC1_char_arr);
+    lcd1602_print(".");
+    uint8_t JEDEC2_char_arr[10];
+    num_uint_ascii(JEDEC[2], JEDEC2_char_arr);
+    lcd1602_print(JEDEC2_char_arr);
     for (volatile int i = 0; i < 1000000; i++)
         ;
-    float xyz = 0.0;
-    w25q32_read(4, 'A', 0x50, (uint8_t *)&xyz, 4);
-    uint8_t xyz_char_arr[12];
-    num_float4digi_ascii(xyz, xyz_char_arr);
-    lcd1602_row2();
-    lcd1602_print(xyz_char_arr);
-    for (volatile int i = 0; i < 1000000; i++)
-        ;
-    int8_t mem = 1;
 
     while (1)
     {
@@ -58,7 +63,6 @@ int main(void)
         num_float4digi_ascii(pres, pres_char_arr);
 
         lcd1602_clear();
-
         lcd1602_print("Temp: ");
         lcd1602_print(aht_temp_char_arr);
         lcd1602_char(0xDF);
@@ -82,32 +86,6 @@ int main(void)
         lcd1602_print(bmp_temp_char_arr);
         lcd1602_char(0xDF);
         lcd1602_char('C');
-        for (volatile int i = 0; i < 1000000; i++)
-            ;
-
-        // Flash test
-        if (mem == 2)
-        {
-            mem = 0;
-
-            lcd1602_clear();
-            lcd1602_print("Writing, ");
-            for (volatile int i = 0; i < 1000000; i++)
-                ;
-            lcd1602_print(aht_temp_char_arr);
-            for (volatile int i = 0; i < 1000000; i++)
-                ;
-            lcd1602_row2();
-            lcd1602_print("to mem 0x50");
-            for (volatile int i = 0; i < 1000000; i++)
-                ;
-            w25q32_write(4, 'A', 0x50, (uint8_t *)&aht_temp, 4);
-            lcd1602_clear();
-            lcd1602_print("Completed..");
-        }
-        else if (mem == 1)
-            mem++;
-
         for (volatile int i = 0; i < 1000000; i++)
             ;
     }
