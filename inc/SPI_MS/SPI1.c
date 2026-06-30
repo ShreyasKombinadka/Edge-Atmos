@@ -8,11 +8,11 @@
 void spi1_init(uint8_t CPOL_CPHA, uint8_t BR) // SPI1 Initialisation00
 {
     RCC->APB2ENR |= (1 << 12); // Enable SPI1
-    gpio_en('A');              // Enable GPIOA port
+    gpio_en('A');              // Enable GPIOA PORT
 
-    gpio_setpin(5, 'A', 11); // SCK1 (50MHz alternate push pull)
-    gpio_setpin(6, 'A', 4);  // MISO1 (Floating input)
-    gpio_setpin(7, 'A', 11); // MOSI1 (50MHz alternate push pull)
+    gpio_setup(5, 'A', 11); // SCK1 (50MHz alternate push pull)
+    gpio_setup(6, 'A', 4);  // MISO1 (Floating input)
+    gpio_setup(7, 'A', 11); // MOSI1 (50MHz alternate push pull)
 
     SPI1->CR1 |= (1 << 2);           // Master mode
     SPI1->CR1 |= (3 << 8);           // Ignore NSS and assume HIGH internally
@@ -26,164 +26,17 @@ void spi1_init(uint8_t CPOL_CPHA, uint8_t BR) // SPI1 Initialisation00
 
 void spi1_slaveset(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_PORT) // Add slave select pin
 {
-    switch (SLAVE_CS_PIN_PORT)
-    {
-    case 'A':                     // GPIOA
-        RCC->APB2ENR |= (1 << 2); // Enable GPIOA
+    gpio_en(SLAVE_CS_PIN_PORT); // Enable GPIO PORT
 
-        if (SLAVE_CS < 16)
-        {
-            if (SLAVE_CS < 8)
-            {
-                GPIOA->CRL &= ~(0xF << SLAVE_CS * 4); // Clear configuration
-                GPIOA->CRL |= (2 << SLAVE_CS * 4);    // Set as output at 2MHz push pull mode
-            }
-            else
-            {
-                GPIOA->CRH &= ~(0xF << ((SLAVE_CS - 8) * 4)); // Clear configuration
-                GPIOA->CRH |= (2 << ((SLAVE_CS - 8) * 4));    // Set as output at 2MHz push pull mode
-            }
-        }
-
-        break;
-
-    case 'B':                     // GPIOB
-        RCC->APB2ENR |= (1 << 3); // Enable GPIOB
-
-        if (SLAVE_CS < 16)
-        {
-            if (SLAVE_CS < 8)
-            {
-                GPIOB->CRL &= ~(0xF << SLAVE_CS * 4); // Clear configuration
-                GPIOB->CRL |= (2 << SLAVE_CS * 4);    // Set as output at 2MHz push pull mode
-            }
-            else
-            {
-                GPIOB->CRH &= ~(0xF << ((SLAVE_CS - 8) * 4)); // Clear configuration
-                GPIOB->CRH |= (2 << ((SLAVE_CS - 8) * 4));    // Set as output at 2MHz push pull mode
-            }
-        }
-
-        break;
-
-    case 'C':                     // GPIOC
-        RCC->APB2ENR |= (1 << 4); // Enable GPIOC
-
-        if (SLAVE_CS < 16)
-        {
-            if (SLAVE_CS < 8)
-            {
-                GPIOC->CRL &= ~(0xF << SLAVE_CS * 4); // Clear configuration
-                GPIOC->CRL |= (2 << SLAVE_CS * 4);    // Set as output at 2MHz push pull mode
-            }
-            else
-            {
-                GPIOC->CRH &= ~(0xF << ((SLAVE_CS - 8) * 4)); // Clear configuration
-                GPIOC->CRH |= (2 << ((SLAVE_CS - 8) * 4));    // Set as output at 2MHz push pull mode
-            }
-        }
-
-        break;
-
-    case 'D':                     // GPIOD
-        RCC->APB2ENR |= (1 << 5); // Enable GPIOD
-
-        if (SLAVE_CS < 16)
-        {
-            if (SLAVE_CS < 8)
-            {
-                GPIOD->CRL &= ~(0xF << SLAVE_CS * 4); // Clear configuration
-                GPIOD->CRL |= (2 << SLAVE_CS * 4);    // Set as output at 2MHz push pull mode
-            }
-            else
-            {
-                GPIOD->CRH &= ~(0xF << ((SLAVE_CS - 8) * 4)); // Clear configuration
-                GPIOD->CRH |= (2 << ((SLAVE_CS - 8) * 4));    // Set as output at 2MHz push pull mode
-            }
-        }
-
-        break;
-
-    case 'E':                     // GPIOE
-        RCC->APB2ENR |= (1 << 6); // Enable GPIOE
-
-        if (SLAVE_CS < 16)
-        {
-            if (SLAVE_CS < 8)
-            {
-                GPIOE->CRL &= ~(0xF << SLAVE_CS * 4); // Clear configuration
-                GPIOE->CRL |= (2 << SLAVE_CS * 4);    // Set as output at 2MHz push pull mode
-            }
-            else
-            {
-                GPIOE->CRH &= ~(0xF << ((SLAVE_CS - 8) * 4)); // Clear configuration
-                GPIOE->CRH |= (2 << ((SLAVE_CS - 8) * 4));    // Set as output at 2MHz push pull mode
-            }
-        }
-
-        break;
-    }
+    gpio_setup(SLAVE_CS, SLAVE_CS_PIN_PORT, 2); // Set as output at 2MHz push pull mode
 }
 
 void spi1_slaveselect(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_PORT, uint8_t SELECT) // Slave selection
 {
-    switch (SLAVE_CS_PIN_PORT)
-    {
-    case 'A': // GPIOA
-        if (SLAVE_CS < 16)
-        {
-            if (SELECT)
-                GPIOA->BRR = (1 << SLAVE_CS); // Reset SLAVE_CS
-            else
-                GPIOA->BSRR = (1 << SLAVE_CS); // Set SLAVE_CS
-        }
-
-        break;
-
-    case 'B': // GPIOB
-        if (SLAVE_CS < 16)
-        {
-            if (SELECT)
-                GPIOB->BRR = (1 << SLAVE_CS); // Reset SLAVE_CS
-            else
-                GPIOB->BSRR = (1 << SLAVE_CS); // Set SLAVE_CS
-        }
-
-        break;
-
-    case 'C': // GPIOC
-        if (SLAVE_CS < 16)
-        {
-            if (SELECT)
-                GPIOC->BRR = (1 << SLAVE_CS); // Reset SLAVE_CS
-            else
-                GPIOC->BSRR = (1 << SLAVE_CS); // Set SLAVE_CS
-        }
-
-        break;
-
-    case 'D': // GPIOD
-        if (SLAVE_CS < 16)
-        {
-            if (SELECT)
-                GPIOD->BRR = (1 << SLAVE_CS); // Reset SLAVE_CS
-            else
-                GPIOD->BSRR = (1 << SLAVE_CS); // Set SLAVE_CS
-        }
-
-        break;
-
-    case 'E': // GPIOE
-        if (SLAVE_CS < 16)
-        {
-            if (SELECT)
-                GPIOE->BRR = (1 << SLAVE_CS); // Reset SLAVE_CS
-            else
-                GPIOE->BSRR = (1 << SLAVE_CS); // Set SLAVE_CS
-        }
-
-        break;
-    }
+    if (SELECT)
+        gpio_setreset(SLAVE_CS, SLAVE_CS_PIN_PORT, 0); // Pull the slave line low
+    else
+        gpio_setreset(SLAVE_CS, SLAVE_CS_PIN_PORT, 1); // Pull the slave line high
 }
 
 void spi1_8w1byte(uint8_t DATA_W) // SPI write 1byte

@@ -9,7 +9,6 @@ void lcd1602_init(void);
 void lcd1602_w1byte(uint8_t data, uint8_t rs);
 void lcd1602_wwscmd(uint8_t cmd);
 void lcd1602_char(uint8_t data);
-void lcd1602_wws8byte(uint64_t data, int n);
 void lcd1602_print(uint8_t *char_addr);
 void lcd1602_debug(uint8_t *char_addr);
 void lcd1602_clear(void);

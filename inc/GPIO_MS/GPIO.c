@@ -30,7 +30,7 @@ void gpio_en(uint8_t GPIO_PORT) // GPIO PORT CLK enable
     }
 }
 
-void gpio_setpin(uint8_t PIN, uint8_t PIN_PORT, uint8_t PIN_CNF_MODE) // Set PIN configuration and mode
+void gpio_setup(uint8_t PIN, uint8_t PIN_PORT, uint8_t PIN_CNF_MODE) // Set PIN configuration and mode
 /*(PIN_CNF_MODE & 0x0F):
 (PIN_CNF_MODE & 0x0F)[0] = MODE[0]
 (PIN_CNF_MODE & 0x0F)[1] = MODE[1]
@@ -137,6 +137,67 @@ Allowed values:
                 GPIOE->CRH &= ~(0xF << ((PIN - 8) * 4));                  // Clear configuration
                 GPIOE->CRH |= ((PIN_CNF_MODE & 0x0F) << ((PIN - 8) * 4)); // Set PIN configuration and mode
             }
+        }
+
+        break;
+    }
+}
+
+void gpio_setreset(uint8_t PIN, uint8_t PIN_PORT, uint8_t SELECT) // PIN Set(SELECT = 1) or Reset(SELECT = 0)
+{
+    switch (PIN_PORT)
+    {
+    case 'A': // GPIOA
+        if (PIN < 16)
+        {
+            if (SELECT)
+                GPIOA->BSRR = (1 << PIN); // Set PIN
+            else
+                GPIOA->BRR = (1 << PIN); // Reset PIN
+        }
+
+        break;
+
+    case 'B': // GPIOB
+        if (PIN < 16)
+        {
+            if (SELECT)
+                GPIOB->BSRR = (1 << PIN); // Set PIN
+            else
+                GPIOB->BRR = (1 << PIN); // Reset PIN
+        }
+
+        break;
+
+    case 'C': // GPIOC
+        if (PIN < 16)
+        {
+            if (SELECT)
+                GPIOC->BSRR = (1 << PIN); // Set PIN
+            else
+                GPIOC->BRR = (1 << PIN); // Reset PIN
+        }
+
+        break;
+
+    case 'D': // GPIOD
+        if (PIN < 16)
+        {
+            if (SELECT)
+                GPIOD->BSRR = (1 << PIN); // Set PIN
+            else
+                GPIOD->BRR = (1 << PIN); // Reset PIN
+        }
+
+        break;
+
+    case 'E': // GPIOE
+        if (PIN < 16)
+        {
+            if (SELECT)
+                GPIOE->BSRR = (1 << PIN); // Set PIN
+            else
+                GPIOE->BRR = (1 << PIN); // Reset PIN
         }
 
         break;

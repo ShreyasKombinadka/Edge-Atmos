@@ -46,25 +46,6 @@ void lcd1602_char(uint8_t data)
     i2c1_stop();
 }
 
-void lcd1602_wws8byte(uint64_t data, int n)
-{
-    i2c1_wake(LCD_ADDR);
-
-    uint8_t data_temp;
-
-    int count = n;
-    while (count >= 0)
-    {
-        data_temp = (data >> (8 * count));
-
-        lcd1602_w1byte(data_temp, 1);
-
-        count--;
-    }
-
-    i2c1_stop();
-}
-
 void lcd1602_print(uint8_t *char_addr)
 {
     i2c1_wake(LCD_ADDR);
