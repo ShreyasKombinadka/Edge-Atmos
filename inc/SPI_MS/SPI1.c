@@ -1,4 +1,5 @@
 #include "SPI1.h"
+#include "./GPIO_MS/GPIO.h"
 #include <stdint.h>
 
 #define STM32F103xB
@@ -7,24 +8,25 @@
 void spi1_init(uint8_t CPOL_CPHA, uint8_t BR) // SPI1 Initialisation00
 {
     RCC->APB2ENR |= (1 << 12); // Enable SPI1
-    RCC->APB2ENR |= (1 << 2);  // Enable GPIOA block
+    gpio_en('A');              // Enable GPIOA port
 
-    GPIOA->CRL &= ~((0xF << 16) | (0xF << 20)); // Clear settings of pin 4 & 5 (NSS & SCK1)
-    GPIOA->CRL &= ~((0xF << 24) | (0xF << 28)); // Clear settings of pin 6 & 7 (MISO1 & MOSI1)
-    GPIOA->CRL |= (0x4 << 24);                  // pin 6(MISO1) as floating input mode
-    GPIOA->CRL |= (0xB << 28) | (0xB << 20);    // pin 5 & 7 (SCK1 & MOSI1) as 50MHz alternate push pull mode
+    gpio_setpin(5, 'A', 11); // SCK1 (50MHz alternate push pull)
+    gpio_setpin(6, 'A', 4);  // MISO1 (Floating input)
+    gpio_setpin(7, 'A', 11); // MOSI1 (50MHz alternate push pull)
 
-    SPI1->CR1 |= (1 << 2);   // Master mode
-    SPI1->CR1 |= (3 << 8);   // Ignore NSS and assume HIGH internally
-    SPI1->CR1 |= CPOL_CPHA;  // CLK and Data read write configuration
-    SPI1->CR1 |= (BR << 3);  // CLK devider select for SPI CLK
-    SPI1->CR1 &= ~(1 << 11); // 8bit mode
-    SPI1->CR1 |= (1 << 6);   // SPI enable
+    SPI1->CR1 |= (1 << 2);           // Master mode
+    SPI1->CR1 |= (3 << 8);           // Ignore NSS and assume HIGH internally
+    SPI1->CR1 &= ~3;                 // CLK and Data read write bits clear
+    SPI1->CR1 |= (CPOL_CPHA & 0x03); // CLK and Data read write configuration
+    SPI1->CR1 &= ~(7 << 3);          // CLK devider select bits clear
+    SPI1->CR1 |= ((BR & 0x07) << 3); // CLK devider select for SPI CLK
+    SPI1->CR1 &= ~(1 << 11);         // 8bit mode
+    SPI1->CR1 |= (1 << 6);           // SPI enabled
 }
 
-void spi1_slaveset(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK) // Add slave select pin
+void spi1_slaveset(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_PORT) // Add slave select pin
 {
-    switch (SLAVE_CS_PIN_BLOCK)
+    switch (SLAVE_CS_PIN_PORT)
     {
     case 'A':                     // GPIOA
         RCC->APB2ENR |= (1 << 2); // Enable GPIOA
@@ -123,9 +125,9 @@ void spi1_slaveset(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK) // Add slave se
     }
 }
 
-void spi1_slaveselect(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint8_t SELECT) // Slave selection
+void spi1_slaveselect(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_PORT, uint8_t SELECT) // Slave selection
 {
-    switch (SLAVE_CS_PIN_BLOCK)
+    switch (SLAVE_CS_PIN_PORT)
     {
     case 'A': // GPIOA
         if (SLAVE_CS < 16)
@@ -239,12 +241,12 @@ uint8_t spi1_8wr1byte(uint8_t DATA_W) // SPI write and read 1byte
     return DATA_R;
 }
 
-uint8_t spi1_8wr1bytesd(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint8_t DATA_W) // SPI write and read 1byte with slave selct and de-selct
+uint8_t spi1_8wr1bytesd(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_PORT, uint8_t DATA_W) // SPI write and read 1byte with slave selct and de-selct
 {
     (void)SPI1->SR; // Clear flags
     (void)SPI1->DR; // Clear DR
 
-    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 1); // Select slave
+    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_PORT, 1); // Select slave
 
     while (!(SPI1->SR & (1 << 1))) // Wait till the Tx buffer is empty
         ;
@@ -257,17 +259,17 @@ uint8_t spi1_8wr1bytesd(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint8_t DA
     while (SPI1->SR & (1 << 7)) // Wait till SPI is completed and DR is free
         ;
 
-    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 0); // De-select slave
+    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_PORT, 0); // De-select slave
 
     return DATA_R;
 }
 
-void spi1_8wrnbytesd(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint8_t *DATA_W, uint8_t *DATA_R, int n) // SPI write and read nbyte with slave selct and de-selct
+void spi1_8wrnbytesd(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_PORT, uint8_t *DATA_W, uint8_t *DATA_R, int n) // SPI write and read nbyte with slave selct and de-selct
 {
     (void)SPI1->SR; // Clear flags
     (void)SPI1->DR; // Clear DR
 
-    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 1); // Select slave
+    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_PORT, 1); // Select slave
 
     for (volatile int i = 0; i < n; i++)
     {
@@ -283,5 +285,5 @@ void spi1_8wrnbytesd(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_BLOCK, uint8_t *DATA
     while (SPI1->SR & (1 << 7)) // Wait till SPI is completed and DR is free
         ;
 
-    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_BLOCK, 0); // De-select slave
+    spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_PORT, 0); // De-select slave
 }
