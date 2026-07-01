@@ -30,8 +30,9 @@ void gpio_en(uint8_t GPIO_PORT) // GPIO PORT CLK enable
     }
 }
 
-void gpio_setup(uint8_t PIN, uint8_t PIN_PORT, uint8_t PIN_CNF_MODE) // Set PIN configuration and mode
-/*(PIN_CNF_MODE & 0x0F):
+/* PIN configuration and mode
+
+(PIN_CNF_MODE & 0x0F):
 (PIN_CNF_MODE & 0x0F)[0] = MODE[0]
 (PIN_CNF_MODE & 0x0F)[1] = MODE[1]
 (PIN_CNF_MODE & 0x0F)[2] = CNF[0]
@@ -53,6 +54,7 @@ Allowed values:
 2: AltPushPull: Input with pull-up/pull-down / Alternate Function Push-Pull Mode
 3: AltOpenDrain: Alternate Function Open-Drain Mode
  */
+void gpio_setup(uint8_t PIN, uint8_t PIN_PORT, uint8_t PIN_CNF_MODE) // Set PIN configuration and mode
 {
     switch (PIN_PORT)
     {
