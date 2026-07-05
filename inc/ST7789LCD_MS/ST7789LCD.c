@@ -4,20 +4,22 @@
 
 #include <stdint.h>
 
-void st7789lcd_init(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, uint8_t RST, uint8_t RST_PORT, uint8_t LED, uint8_t LED_PORT)
+void st7789lcd_init(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, uint8_t RST, uint8_t RST_PORT, uint8_t LED, uint8_t LED_PORT) // TFT(ST7789) LCD display without touch initialisation
 {
     gpio_en(CS_PORT);  // Enable CS pin port
     gpio_en(DC_PORT);  // Enable DC pin port
     gpio_en(RST_PORT); // Enable RST pin port
-    gpio_en(LED_PORT); // Enable LED pin port
 
     gpio_setup(CS, CS_PORT, 2);   // Set as output at 2MHz push pull mode
     gpio_setup(DC, DC_PORT, 2);   // Set as output at 2MHz push pull mode
     gpio_setup(RST, RST_PORT, 2); // Set as output at 2MHz push pull mode
-    gpio_setup(LED, LED_PORT, 2); // Set as output at 2MHz push pull mode
 
-    if (!(LED_PORT == 'V'))              // If the LED pin is not VCC
+    if (!(LED_PORT == 'V' || LED_PORT == 'v')) // If the LED pin is not VCC
+    {
+        gpio_en(LED_PORT);               // Enable LED pin port
+        gpio_setup(LED, LED_PORT, 2);    // Set as output at 2MHz push pull mode
         gpio_setreset(LED, LED_PORT, 1); // Set LED pin
+    }
 
     gpio_setreset(RST, RST_PORT, 0);        // Reset RST pin
     for (volatile int i = 0; i <= 160; i++) // Delay of 50mS
@@ -95,5 +97,19 @@ void st7789lcd_init(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, ui
         for (volatile int j = 0; j <= 160; j++)
             ;
 
+    spi1_slaveselect(CS, CS_PORT, 0); // De-select slave device
+}
+
+void st7789lcd_memtest(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, uint16_t FILL_COLOR) // Memory test by filling color
+{
+    spi1_slaveselect(CS, CS_PORT, 1); // Select slave
+    gpio_setreset(DC, DC_PORT, 0);    // Reset DC pin for cmd
+    spi1_8w1byte(0x2C);               // Memory Write cmd
+    gpio_setreset(DC, DC_PORT, 1);    // Set DC pin for data
+    for (volatile int i = 0; i < 76800; i++)
+    {
+        spi1_8w1byte(0xF8);
+        spi1_8w1byte(0x00);
+    }
     spi1_slaveselect(CS, CS_PORT, 0); // De-select slave device
 }

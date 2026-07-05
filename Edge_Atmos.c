@@ -6,6 +6,7 @@
 #include "./AHT10_MS/AHT10.h"
 #include "./BMP280_MS/BMP280.h"
 #include "./W25Q32_MS/W25Q32.h"
+#include "./ST7789LCD_MS/ST7789LCD.h"
 
 #define STM32F103xB
 #include "./STM32F103_CMSIS/stm32f1xx.h"
@@ -16,6 +17,7 @@ int main(void)
     spi1_init(0, 2);
     spi1_slaveset(4, 'A');
     lcd1602_init();
+    lcd1602_clear();
     lcd1602_print("Edge Atmos");
     for (volatile int i = 0; i < 1000000; i++)
         ;
@@ -25,9 +27,11 @@ int main(void)
     uint8_t FACTORY_CALIBRATION_DATA[24];
     bmp280_init(FACTORY_CALIBRATION_DATA);
 
-    // Flash test
-    w25q32_sectorclear(4, 'A', 0);
-    w25q32_write(4, 'A', 0, "Hellow World...!", 16);
+    st7789lcd_init(4, 'A', 1, 'A', 2, 'A', 0, 'A');
+    lcd1602_clear();
+    lcd1602_print("TFT init completed..!");
+    for (volatile int i = 0; i < 1000000; i++)
+        ;
 
     while (1)
     {
@@ -71,15 +75,6 @@ int main(void)
         lcd1602_print(bmp_temp_char_arr);
         lcd1602_char(0xDF);
         lcd1602_char('C');
-        for (volatile int i = 0; i < 1000000; i++)
-            ;
-
-        // Flash test
-        uint8_t arr[17];
-        arr[16] = '\0';
-        w25q32_read(4, 'A', 0, arr, 16);
-        lcd1602_clear();
-        lcd1602_print(arr);
         for (volatile int i = 0; i < 1000000; i++)
             ;
     }
