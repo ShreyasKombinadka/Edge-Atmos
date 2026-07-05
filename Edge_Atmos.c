@@ -14,8 +14,9 @@
 int main(void)
 {
     i2c1_init();
-    spi1_init(0, 2);
+    spi1_init(0, 0);
     spi1_slaveset(4, 'A');
+    spi1_slaveset(3, 'A');
     lcd1602_init();
     lcd1602_clear();
     lcd1602_print("Edge Atmos");
@@ -27,11 +28,13 @@ int main(void)
     uint8_t FACTORY_CALIBRATION_DATA[24];
     bmp280_init(FACTORY_CALIBRATION_DATA);
 
-    st7789lcd_init(4, 'A', 1, 'A', 2, 'A', 0, 'A');
+    st7789lcd_init(3, 'A', 1, 'A', 2, 'A', 0, 'A');
     lcd1602_clear();
     lcd1602_print("TFT init completed..!");
     for (volatile int i = 0; i < 1000000; i++)
         ;
+
+    st7789lcd_memtest(3, 'A', 1, 'A', 0xF800);
 
     while (1)
     {
