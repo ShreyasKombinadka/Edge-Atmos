@@ -16,7 +16,6 @@ int main(void)
     i2c1_init();
     spi1_init(0, 0);
     spi1_slaveset(4, 'A');
-    spi1_slaveset(3, 'A');
     lcd1602_init();
     lcd1602_clear();
     lcd1602_print("Edge Atmos");

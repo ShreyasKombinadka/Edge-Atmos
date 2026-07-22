@@ -12,6 +12,8 @@ void st7789lcd_init(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, ui
     gpio_setup(DC, DC_PORT, 2);   // Set as output at 2MHz push pull mode
     gpio_setup(RST, RST_PORT, 2); // Set as output at 2MHz push pull mode
 
+    spi1_slaveset(CS, CS_PORT); // Set CS pin
+
     if (!(LED_PORT == 'V' || LED_PORT == 'v')) // If the LED pin is not VCC
     {
         gpio_en(LED_PORT);               // Enable LED pin port
