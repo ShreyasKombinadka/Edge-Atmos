@@ -26,7 +26,7 @@
 int main(void)
 {
     i2c1_init();
-    spi1_init(0, 0);
+    spi1_init(3, 0);
     lcd1602_init();
 
     spi1_slaveset(MEM_CS, MEM_CS_PORT);
@@ -42,12 +42,10 @@ int main(void)
     bmp280_init(FACTORY_CALIBRATION_DATA);
 
     st7789lcd_init(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT);
-    lcd1602_clear();
-    lcd1602_print("TFT init completed..!");
-    for (volatile int i = 0; i < 1000000; i++)
-        ;
+    lcd1602_debug("TFT init completed..!");
 
     st7789lcd_disptest(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
+    lcd1602_debug("Inversion on and off completed..!");
 
     while (1)
     {
@@ -93,5 +91,11 @@ int main(void)
         lcd1602_char('C');
         for (volatile int i = 0; i < 1000000; i++)
             ;
+
+        // Flash read for SPI functionality test
+        uint8_t arr[17];
+        arr[16] = '\0';
+        w25q32_read(MEM_CS, MEM_CS_PORT, 0, arr, 16);
+        lcd1602_debug(arr);
     }
 }
