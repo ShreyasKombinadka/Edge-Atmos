@@ -156,8 +156,6 @@ void st7789lcd_disptest(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT
 {
     spi1_slaveselect(CS, CS_PORT, 1); // Select slave
 
-    // Display test :
-
     gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
 
     // Display Inversion ON
@@ -173,5 +171,5 @@ void st7789lcd_disptest(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT
 
     spi1_slaveselect(CS, CS_PORT, 0); // De-select slave device
 
-    // st7789lcd_memtest(CS, CS_PORT, DC, DC_PORT, 0xF800);
+    // st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0xF800);
 }

@@ -11,12 +11,26 @@
 #define STM32F103xB
 #include "./STM32F103_CMSIS/stm32f1xx.h"
 
+// Pins and Ports
+#define MEM_CS 4         // Flash CS
+#define MEM_CS_PORT 'A'  // Flash CS port
+#define TFT_CS 3         // TFT display CS
+#define TFT_CS_PORT 'A'  // TFT display CS port
+#define TFT_DC 1         // TFT display DC
+#define TFT_DC_PORT 'A'  // TFT display DC port
+#define TFT_RST 2        // TFT display RST
+#define TFT_RST_PORT 'A' // TFT display RST port
+#define TFT_LED 0        // TFT display LED
+#define TFT_LED_PORT 'A' // TFT display LED port
+
 int main(void)
 {
     i2c1_init();
     spi1_init(0, 0);
-    spi1_slaveset(4, 'A');
     lcd1602_init();
+
+    spi1_slaveset(MEM_CS, MEM_CS_PORT);
+
     lcd1602_clear();
     lcd1602_print("Edge Atmos");
     for (volatile int i = 0; i < 1000000; i++)
@@ -27,11 +41,13 @@ int main(void)
     uint8_t FACTORY_CALIBRATION_DATA[24];
     bmp280_init(FACTORY_CALIBRATION_DATA);
 
-    st7789lcd_init(3, 'A', 1, 'A', 2, 'A', 0, 'A');
+    st7789lcd_init(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT);
     lcd1602_clear();
     lcd1602_print("TFT init completed..!");
     for (volatile int i = 0; i < 1000000; i++)
         ;
+
+    st7789lcd_disptest(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
 
     while (1)
     {
