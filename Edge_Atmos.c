@@ -33,8 +33,6 @@ int main(void)
     for (volatile int i = 0; i < 1000000; i++)
         ;
 
-    st7789lcd_memtest(3, 'A', 1, 'A', 0xF800);
-
     while (1)
     {
         float aht_temp = 0;

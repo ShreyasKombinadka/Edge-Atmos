@@ -113,7 +113,7 @@ void st7789lcd_init(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, ui
     spi1_slaveselect(CS, CS_PORT, 0); // De-select slave device
 }
 
-void st7789lcd_memtest(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, uint16_t FILL_COLOR) // Memory test by filling color
+void st7789lcd_fillcolor(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, uint16_t FILL_COLOR) // Fill display
 {
     spi1_slaveselect(CS, CS_PORT, 1); // Select slave
 
@@ -140,14 +140,38 @@ void st7789lcd_memtest(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT,
     spi1_8w1byte(0x3F);
 
     // Memory Write
-    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
-    spi1_8w1byte(0x2C);            // Memory Write cmd
-    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
-    for (volatile int i = 0; i < 76800; i++)
+    gpio_setreset(DC, DC_PORT, 0);           // Reset DC pin for cmd
+    spi1_8w1byte(0x2C);                      // Memory Write cmd
+    gpio_setreset(DC, DC_PORT, 1);           // Set DC pin for data
+    for (volatile int i = 0; i < 76800; i++) // Color filling
     {
-        spi1_8wf1byte(0xF8);
-        spi1_8wf1byte(0x00);
+        spi1_8wf1byte((uint8_t)(FILL_COLOR >> 8));
+        spi1_8wf1byte((uint8_t)FILL_COLOR);
     }
 
     spi1_slaveselect(CS, CS_PORT, 0); // De-select slave device
+}
+
+void st7789lcd_disptest(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT) // Display test
+{
+    spi1_slaveselect(CS, CS_PORT, 1); // Select slave
+
+    // Display test :
+
+    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
+
+    // Display Inversion ON
+    spi1_8w1byte(0x21);                     // Display Inversion ON cmd
+    for (volatile int i = 0; i <= 710; i++) // Delay of ~1S
+        for (volatile int j = 0; j <= 710; j++)
+            ;
+    // Display Inversion OFF
+    spi1_8w1byte(0x20);                     // Display Inversion OFF cmd
+    for (volatile int i = 0; i <= 710; i++) // Delay of ~1S
+        for (volatile int j = 0; j <= 710; j++)
+            ;
+
+    spi1_slaveselect(CS, CS_PORT, 0); // De-select slave device
+
+    // st7789lcd_memtest(CS, CS_PORT, DC, DC_PORT, 0xF800);
 }

@@ -9,7 +9,6 @@
 CPHA & CPOL
 Bit 0: Clock phase(CPHA).
 Bit 1: Clock polarity(CPOL).
-
 Allowed values:
 0: FirstEdge: The first clock transition is the first data capture edge & IdleLow: CK to 0 when idle
 1: SecondEdge: The second clock transition is the first data capture edge & IdleLow: CK to 0 when idle
@@ -18,7 +17,6 @@ Allowed values:
 
 BR
 3 bits : Baud rate control.
-
 Allowed values:
 0: Div2: f_PCLK / 2
 1: Div4: f_PCLK / 4
