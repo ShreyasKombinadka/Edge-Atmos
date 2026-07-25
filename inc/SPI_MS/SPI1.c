@@ -32,9 +32,9 @@ void spi1_init(uint8_t CPOL_CPHA, uint8_t BR) // SPI1 Initialisation00
     RCC->APB2ENR |= (1 << 12); // Enable SPI1
     gpio_en('A');              // Enable GPIOA PORT
 
-    gpio_setup(5, 'A', 11); // SCK1 (50MHz alternate push pull)
-    gpio_setup(6, 'A', 4);  // MISO1 (Floating input)
-    gpio_setup(7, 'A', 11); // MOSI1 (50MHz alternate push pull)
+    gpio_setup(5, 'A', 3, 2); // SCK1 (50MHz alternate push pull)
+    gpio_setup(6, 'A', 0, 1); // MISO1 (Floating input)
+    gpio_setup(7, 'A', 3, 2); // MOSI1 (50MHz alternate push pull)
 
     SPI1->CR1 |= (1 << 2);           // Master mode
     SPI1->CR1 |= (3 << 8);           // Ignore NSS and assume HIGH internally
@@ -46,11 +46,11 @@ void spi1_init(uint8_t CPOL_CPHA, uint8_t BR) // SPI1 Initialisation00
     SPI1->CR1 |= (1 << 6);           // SPI enabled
 }
 
-void spi1_slaveset(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_PORT) // Add slave select pin
+void spi1_slaveset(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_PORT, uint8_t MODE) // Add slave select pin
 {
     gpio_en(SLAVE_CS_PIN_PORT); // Enable GPIO PORT
 
-    gpio_setup(SLAVE_CS, SLAVE_CS_PIN_PORT, 2); // Set as output at 2MHz push pull mode
+    gpio_setup(SLAVE_CS, SLAVE_CS_PIN_PORT, MODE, 0); // Set as output at 2MHz push pull mode
 
     spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_PORT, 0); // De-select slave device by default
 }

@@ -29,7 +29,7 @@ int main(void)
     spi1_init(3, 0);
     lcd1602_init();
 
-    spi1_slaveset(MEM_CS, MEM_CS_PORT);
+    spi1_slaveset(MEM_CS, MEM_CS_PORT, 2);
 
     lcd1602_clear();
     lcd1602_print("Edge Atmos");
@@ -43,11 +43,13 @@ int main(void)
     bmp280_init(FACTORY_CALIBRATION_DATA);
     */
 
+    lcd1602_debug("1");
     st7789lcd_init(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT);
-    lcd1602_debug("TFT init completed..!");
+    lcd1602_debug("2");
 
+    lcd1602_debug("3");
     st7789lcd_disptest(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
-    lcd1602_debug("Inversion on and off completed..!");
+    lcd1602_debug("4");
 
     uint8_t count = 0;
 

@@ -10,15 +10,15 @@ void st7789lcd_init(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, ui
     gpio_en(DC_PORT);  // Enable DC pin port
     gpio_en(RST_PORT); // Enable RST pin port
 
-    gpio_setup(DC, DC_PORT, 2);   // Set as output at 2MHz push pull mode
-    gpio_setup(RST, RST_PORT, 2); // Set as output at 2MHz push pull mode
+    gpio_setup(DC, DC_PORT, 3, 0);   // Set as output at 2MHz push pull mode
+    gpio_setup(RST, RST_PORT, 3, 0); // Set as output at 2MHz push pull mode
 
-    spi1_slaveset(CS, CS_PORT); // Set CS pin
+    spi1_slaveset(CS, CS_PORT, 3); // Set CS pin
 
     if (!(LED_PORT == 'V' || LED_PORT == 'v')) // If the LED pin is not VCC
     {
         gpio_en(LED_PORT);               // Enable LED pin port
-        gpio_setup(LED, LED_PORT, 2);    // Set as output at 2MHz push pull mode
+        gpio_setup(LED, LED_PORT, 3, 0); // Set as output at 2MHz push pull mode
         gpio_setreset(LED, LED_PORT, 1); // Set LED pin
     }
 
@@ -167,6 +167,7 @@ void st7789lcd_fillcolor(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_POR
 
 void st7789lcd_disptest(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT) // Display test
 {
+    /*
     spi1_slaveselect(CS, CS_PORT, 1); // Select slave
 
     gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
@@ -183,6 +184,7 @@ void st7789lcd_disptest(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT
             ;
 
     spi1_slaveselect(CS, CS_PORT, 0); // De-select slave device
+    */
 
-    // st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0xF800);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0xF800);
 }

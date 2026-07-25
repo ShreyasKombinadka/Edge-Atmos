@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 void spi1_init(uint8_t CPOL_CPHA, uint8_t BR);                                      // SPI1 Initialisation
-void spi1_slaveset(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_PORT);                    // Add slave select pin
+void spi1_slaveset(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_PORT, uint8_t MODE);      // Add slave select pin
 void spi1_slaveselect(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_PORT, uint8_t SELECT); // Slave selection
 void spi1_8wf1byte(uint8_t DATA_W);                                                 // SPI fast write 1byte
 void spi1_8w1byte(uint8_t DATA_W);                                                  // SPI write 1byte

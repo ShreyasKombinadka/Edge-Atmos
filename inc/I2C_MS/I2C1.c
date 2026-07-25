@@ -11,8 +11,8 @@ void i2c1_init(void)
     RCC->APB1ENR |= (1 << 21); // Enable I2C1 block
     gpio_en('B');              // Enable GPIOB port
 
-    gpio_setup(6, 'B', 14); // SCL1(Alternate open drain)
-    gpio_setup(7, 'B', 14); // SDA1(Alternate open drain)
+    gpio_setup(6, 'B', 2, 3); // SCL1(Alternate open drain)
+    gpio_setup(7, 'B', 2, 3); // SDA1(Alternate open drain)
 
     I2C1->CR2 = 8;
     I2C1->CCR = 40;
