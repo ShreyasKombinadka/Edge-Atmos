@@ -36,26 +36,18 @@ int main(void)
     for (volatile int i = 0; i < 1000000; i++)
         ;
 
-    /*
     aht10_init();
 
     uint8_t FACTORY_CALIBRATION_DATA[24];
     bmp280_init(FACTORY_CALIBRATION_DATA);
-    */
 
-    lcd1602_debug("1");
     st7789lcd_init(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT);
     lcd1602_debug("2");
 
-    lcd1602_debug("3");
     st7789lcd_disptest(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
-    lcd1602_debug("4");
-
-    uint8_t count = 0;
 
     while (1)
     {
-        /*
         float aht_temp = 0;
         float bmp_temp = 0;
         float humi = 0;
@@ -104,11 +96,5 @@ int main(void)
         arr[16] = '\0';
         w25q32_read(MEM_CS, MEM_CS_PORT, 0, arr, 16);
         lcd1602_debug(arr);
-        */
-
-        uint8_t count_arr[8];
-        num_uint_ascii(count, count_arr);
-        lcd1602_debug(count_arr);
-        count++;
     }
 }

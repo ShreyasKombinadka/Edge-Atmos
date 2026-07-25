@@ -126,9 +126,9 @@ void st7789lcd_init(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, ui
     spi1_8w1byte(0xA4);            // Data Parameter
     spi1_8w1byte(0xA1);            // Data Parameter
 
-    // Display Inversion ON
+    // Display Inversion OFF
     gpio_setreset(DC, DC_PORT, 0);         // Reset DC pin for cmd
-    spi1_8w1byte(0x21);                    // Display Inversion ON cmd
+    spi1_8w1byte(0x20);                    // Display Inversion OFF cmd
     for (volatile int i = 0; i <= 80; i++) // Delay of ~10mS
         for (volatile int j = 0; j <= 80; j++)
             ;
@@ -167,24 +167,20 @@ void st7789lcd_fillcolor(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_POR
 
 void st7789lcd_disptest(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT) // Display test
 {
-    /*
-    spi1_slaveselect(CS, CS_PORT, 1); // Select slave
-
-    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
-
-    // Display Inversion ON
-    spi1_8w1byte(0x21);                     // Display Inversion ON cmd
-    for (volatile int i = 0; i <= 710; i++) // Delay of ~1S
-        for (volatile int j = 0; j <= 710; j++)
-            ;
-    // Display Inversion OFF
-    spi1_8w1byte(0x20);                     // Display Inversion OFF cmd
-    for (volatile int i = 0; i <= 710; i++) // Delay of ~1S
-        for (volatile int j = 0; j <= 710; j++)
-            ;
-
-    spi1_slaveselect(CS, CS_PORT, 0); // De-select slave device
-    */
-
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0x0000);
     st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0xF800);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0x07E0);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0x001F);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0xFFE0);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0x07FF);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0xF81F);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0x8410);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0xF71C);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0x8000);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0x8400);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0x07FF);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0x07E0);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0x0010);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0x8010);
+    st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0xFFFF);
 }
