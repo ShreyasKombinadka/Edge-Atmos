@@ -1,6 +1,6 @@
 #include "ST7789LCD.h"
 #include "../SPI_MS/SPI1.h"
-#include "./GPIO_MS/GPIO.h"
+#include "../GPIO_MS/GPIO.h"
 
 #include <stdint.h>
 
