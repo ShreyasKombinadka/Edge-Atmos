@@ -3,6 +3,6 @@
 
 #include <sched.h>
 
-uint8_t *bitmap_letter(uint8_t LETTER); // Letters bitmap
+uint8_t *bitmap_char(uint8_t CHAR); // Charecter bitmap
 
 #endif

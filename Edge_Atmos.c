@@ -95,6 +95,6 @@ int main(void)
         uint8_t arr[17];
         arr[16] = '\0';
         w25q32_read(MEM_CS, MEM_CS_PORT, 0, arr, 16);
-        lcd1602_debug(arr);
+        st7789lcd_print(arr, 10, 10, 0, 0xFFFF, 1, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
     }
 }

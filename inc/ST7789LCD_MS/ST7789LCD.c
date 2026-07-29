@@ -1,6 +1,7 @@
 #include "ST7789LCD.h"
 #include "../SPI_MS/SPI1.h"
 #include "../GPIO_MS/GPIO.h"
+#include "../MS_FONT/BITMAP.h"
 
 #include <stdint.h>
 
@@ -183,4 +184,83 @@ void st7789lcd_disptest(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT
     st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0x0010);
     st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0x8010);
     st7789lcd_fillcolor(CS, CS_PORT, DC, DC_PORT, 0xFFFF);
+}
+
+void st7789lcd_print(uint8_t *TEXT, uint16_t X_START_ADDR, uint16_t Y_START_ADDR, uint16_t TEXT_COLOR, uint16_t BG_COLOR, uint8_t TEXT_SIZE, uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT) // Display write function
+{
+    spi1_slaveselect(CS, CS_PORT, 1); // Select slave
+
+    uint8_t count = 0;          // Charecter counter
+    while (TEXT[count] != '\0') // Charecter check
+    {
+        // Pixel location calculation
+        uint16_t temp_X_END_ADDR = X_START_ADDR + (8 * TEXT_SIZE) - 1;       // Row end address
+        uint16_t temp_Y_START_ADDR = Y_START_ADDR + (6 * count * TEXT_SIZE); // Column start address
+        uint16_t temp_Y_END_ADDR = temp_Y_START_ADDR + (6 * TEXT_SIZE) - 1;  // Column end address
+
+        uint8_t *bitmap = bitmap_char(TEXT[count]); // Charecter bitmap data
+
+        // Row Address Set
+        gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
+        spi1_8w1byte(0x2B);            // Row Address Set cmd
+        gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
+        // Start Row
+        spi1_8w1byte((uint8_t)(X_START_ADDR >> 8));
+        spi1_8w1byte((uint8_t)(X_START_ADDR));
+        // End Row
+        spi1_8w1byte((uint8_t)(temp_X_END_ADDR >> 8));
+        spi1_8w1byte((uint8_t)temp_X_END_ADDR);
+
+        // Column Address Set
+        gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
+        spi1_8w1byte(0x2A);            // Column Address Set cmd
+        gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
+        // Start Column
+        spi1_8w1byte((uint8_t)(temp_Y_START_ADDR >> 8));
+        spi1_8w1byte((uint8_t)temp_Y_START_ADDR);
+        // End Column
+        spi1_8w1byte((uint8_t)(temp_Y_END_ADDR >> 8));
+        spi1_8w1byte((uint8_t)temp_Y_END_ADDR);
+
+        // Memory Write enable
+        gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
+        spi1_8w1byte(0x2C);            // Memory Write enable cmd
+        gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
+
+        // Print charecter
+        for (volatile int row = 0; row < 8; row++) // Row loop
+        {
+            int x_size = TEXT_SIZE;
+            while (x_size > 0) // Text size scaling loop for rows
+            {
+                for (volatile int col = 0; col < 6; col++) // Column loop
+                {
+                    int y_size = TEXT_SIZE;
+                    while (y_size > 0) // Text size scaling loop for columns
+                    {
+                        if (bitmap[row] & (1 << (5 - col))) // For valid pixels
+                        {
+                            // 16 bit pixel value
+                            spi1_8wf1byte((uint8_t)(TEXT_COLOR >> 8));
+                            spi1_8wf1byte((uint8_t)TEXT_COLOR);
+                        }
+                        else // For invalid pixels
+                        {
+                            // 16 bit pixel value
+                            spi1_8wf1byte((uint8_t)(BG_COLOR >> 8));
+                            spi1_8wf1byte((uint8_t)BG_COLOR);
+                        }
+
+                        y_size--;
+                    }
+                }
+
+                x_size--;
+            }
+        }
+
+        count++; // Charecter location incrimenting
+    }
+
+    spi1_slaveselect(CS, CS_PORT, 0); // De-select slave device
 }
