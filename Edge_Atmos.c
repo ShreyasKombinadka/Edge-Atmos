@@ -29,22 +29,20 @@ int main(void)
     spi1_init(3, 0);
     lcd1602_init();
 
-    spi1_slaveset(MEM_CS, MEM_CS_PORT, 2);
-
     lcd1602_clear();
     lcd1602_print("Edge Atmos");
     for (volatile int i = 0; i < 1000000; i++)
         ;
 
+    st7789lcd_init(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT);
+    st7789lcd_clear(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, 0xFFFF);
+
+    spi1_slaveset(MEM_CS, MEM_CS_PORT, 2);
+
     aht10_init();
 
     uint8_t FACTORY_CALIBRATION_DATA[24];
     bmp280_init(FACTORY_CALIBRATION_DATA);
-
-    st7789lcd_init(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT);
-    lcd1602_debug("2");
-
-    st7789lcd_disptest(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
 
     while (1)
     {
@@ -91,10 +89,6 @@ int main(void)
         for (volatile int i = 0; i < 1000000; i++)
             ;
 
-        // Flash read for SPI functionality test
-        uint8_t arr[17];
-        arr[16] = '\0';
-        w25q32_read(MEM_CS, MEM_CS_PORT, 0, arr, 16);
-        st7789lcd_print(arr, 10, 10, 0, 0xFFFF, 1, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
+        st7789lcd_print("Edge Atmos", 10, 10, 0, 0xFFFF, 1, 12, 18, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
     }
 }
