@@ -89,6 +89,7 @@ int main(void)
         for (volatile int i = 0; i < 1000000; i++)
             ;
 
-        st7789lcd_print("Edge Atmos", 10, 10, 0, 0xFFFF, 1, 12, 18, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
+        st7789lcd_print("EDGE ATMOS", 10, 10, 0, 0xFFFF, 1, 12, 18, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
+        st7789lcd_print("0123456789", 20, 10, 0, 0xFFFF, 1, 12, 18, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
     }
 }
