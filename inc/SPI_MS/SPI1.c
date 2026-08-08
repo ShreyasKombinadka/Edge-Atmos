@@ -50,7 +50,7 @@ void spi1_slaveset(uint8_t SLAVE_CS, uint8_t SLAVE_CS_PIN_PORT, uint8_t MODE) //
 {
     gpio_en(SLAVE_CS_PIN_PORT); // Enable GPIO PORT
 
-    gpio_setup(SLAVE_CS, SLAVE_CS_PIN_PORT, MODE, 0); // Set as output at 2MHz push pull mode
+    gpio_setup(SLAVE_CS, SLAVE_CS_PIN_PORT, MODE, 0); // Setup push pull mode
 
     spi1_slaveselect(SLAVE_CS, SLAVE_CS_PIN_PORT, 0); // De-select slave device by default
 }

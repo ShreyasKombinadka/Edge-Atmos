@@ -44,41 +44,7 @@ void st7789lcd_init(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, ui
         for (volatile int j = 0; j <= 1100; j++)
             ;
 
-    // Memory Data Access Control
-    spi1_8w1byte(0x36);            // Memory Data Access Control cmd
-    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
-    spi1_8w1byte(0xC8);            // Sets RGB color path and orientation bits
-
-    // Interface Pixel Format
-    gpio_setreset(DC, DC_PORT, 0);         // Reset DC pin for cmd
-    spi1_8w1byte(0x3A);                    // Interface Pixel Format cmd
-    gpio_setreset(DC, DC_PORT, 1);         // Set DC pin for data
-    spi1_8w1byte(0x55);                    // 16-bit RGB565 color mode
-    for (volatile int i = 0; i <= 80; i++) // Delay of ~10mS
-        for (volatile int j = 0; j <= 80; j++)
-            ;
-
-    // Column Address Set
-    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
-    spi1_8w1byte(0x2A);            // Column Address Set cmd
-    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
-    // Start Column: 0
-    spi1_8w1byte(0x00);
-    spi1_8w1byte(0x00);
-    // End Column: 239
-    spi1_8w1byte(0x00);
-    spi1_8w1byte(0xEF);
-
-    // Row Address Set
-    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
-    spi1_8w1byte(0x2B);            // Row Address Set cmd
-    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
-    // Start Column: 0
-    spi1_8w1byte(0x00);
-    spi1_8w1byte(0x00);
-    // End Column: 319
-    spi1_8w1byte(0x01);
-    spi1_8w1byte(0x3F);
+    st7789lcd_setup(CS, CS_PORT, DC, DC_PORT, 0, 240, 320); // Sets display orientation and RGB color path
 
     // Porch Setting
     gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
@@ -228,31 +194,11 @@ void st7789lcd_print(uint8_t *TEXT, uint16_t X_START_ADDR, uint16_t Y_START_ADDR
     spi1_slaveselect(CS, CS_PORT, 0); // De-select slave device
 }
 
-void st7789lcd_clear(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, uint16_t BG_COLOR) // Display clear
+void st7789lcd_clear(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, uint16_t BG_COLOR, uint32_t ROW_END, uint32_t COL_END) // Display clear
 {
     spi1_slaveselect(CS, CS_PORT, 1); // Select slave
 
-    // Column Address Set
-    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
-    spi1_8w1byte(0x2A);            // Column Address Set cmd
-    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
-    // Start Column: 0
-    spi1_8w1byte(0x00);
-    spi1_8w1byte(0x00);
-    // End Column: 239
-    spi1_8w1byte(0x00);
-    spi1_8w1byte(0xEF);
-
-    // Row Address Set
-    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
-    spi1_8w1byte(0x2B);            // Row Address Set cmd
-    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
-    // Start Column: 0
-    spi1_8w1byte(0x00);
-    spi1_8w1byte(0x00);
-    // End Column: 319
-    spi1_8w1byte(0x01);
-    spi1_8w1byte(0x3F);
+    st7789lcd_setsize(CS, CS_PORT, DC, DC_PORT, 0, 0, COL_END, ROW_END);
 
     // Memory Write
     gpio_setreset(DC, DC_PORT, 0);           // Reset DC pin for cmd
@@ -265,4 +211,89 @@ void st7789lcd_clear(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, u
     }
 
     spi1_slaveselect(CS, CS_PORT, 0); // De-select slave device
+}
+
+void st7789lcd_setup(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, uint8_t ROTATION, uint32_t HEIGHT, uint32_t WIDTH) // Sets display orientation and RGB color path
+{
+    uint32_t row_end = 0;
+    uint32_t col_end = 0;
+    uint8_t MADTCL_data = 0;
+    switch (ROTATION)
+    {
+    case 0:
+        row_end = HEIGHT - 1;
+        col_end = WIDTH - 1;
+        MADTCL_data = 0x00;
+        break;
+    case 1:
+        row_end = WIDTH - 1;
+        col_end = HEIGHT - 1;
+        MADTCL_data = 0x60;
+        break;
+    case 2:
+        row_end = HEIGHT - 1;
+        col_end = WIDTH - 1;
+        MADTCL_data = 0xC0;
+        break;
+    case 3:
+        row_end = WIDTH - 1;
+        col_end = HEIGHT - 1;
+        MADTCL_data = 0xA0;
+        break;
+    default:
+        row_end = HEIGHT - 1;
+        col_end = WIDTH - 1;
+        MADTCL_data = 0x00;
+        break;
+    }
+
+    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
+
+    // Memory Data Access Control(MDACTL)
+    /*
+     * Command Opcode: 0x36 (0011 0110)
+     * Description:   MADCTL (Memory Access Control Command)
+     * Function:      Signals the display controller to accept memory access / orientation setup data on the next byte.
+     */
+    spi1_8w1byte(0x36);            // Memory Data Access Control cmd
+    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
+    /*
+     * MADCTL Parameter Data Byte (Configured Bits)
+     * Bit 7 (MY)  - Page Address Order    : 0 = Top to Bottom, 1 = Bottom to Top
+     * Bit 6 (MX)  - Column Address Order  : 0 = Left to Right, 1 = Right to Left
+     * Bit 5 (MV)  - Page/Column Exchange  : 0 = Normal (Portrait), 1 = Reverse (Landscape)
+     * Bit 4 (ML)  - Vertical Refresh      : 0 = Top to Bottom, 1 = Bottom to Top
+     * Bit 3 (RGB) - Color Panel Select    : 0 = RGB Order, 1 = BGR Order
+     * Bit 2 (MH)  - Horizontal Refresh    : 0 = Left to Right, 1 = Right to Left
+     * Bit 1 (RSV) - Reserved Bit          : Keep 0
+     * Bit 0 (RSV) - Reserved Bit          : Keep 0
+     */
+    spi1_8w1byte(MADTCL_data); // Sets RGB color path and orientation bits
+
+    st7789lcd_setsize(CS, CS_PORT, DC, DC_PORT, 0, 0, col_end, row_end); // Sets display size
+}
+
+void st7789lcd_setsize(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, uint32_t COL_START, uint32_t ROW_START, uint32_t COL_END, uint32_t ROW_END) // Sets display size
+{
+    // Column Address Set
+    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
+    spi1_8w1byte(0x2A);            // Column Address Set cmd
+    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
+    // Start Column:
+    spi1_8w1byte((uint8_t)(COL_START >> 8));
+    spi1_8w1byte((uint8_t)COL_START);
+    // End Column:
+    spi1_8w1byte((uint8_t)(COL_END >> 8));
+    spi1_8w1byte((uint8_t)COL_END);
+
+    // Row Address Set
+    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
+    spi1_8w1byte(0x2B);            // Row Address Set cmd
+    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
+    // Start Row:
+    spi1_8w1byte((uint8_t)(ROW_START >> 8));
+    spi1_8w1byte((uint8_t)ROW_START);
+    // End Row:
+    spi1_8w1byte((uint8_t)(ROW_END >> 8));
+    spi1_8w1byte((uint8_t)ROW_END);
 }
