@@ -22,6 +22,7 @@
 #define TFT_RST_PORT 'A' // TFT display RST port
 #define TFT_LED 0        // TFT display LED
 #define TFT_LED_PORT 'A' // TFT display LED port
+#define DISPLAY_ORIEN 0  // TFT display orientation/rotation
 
 int main(void)
 {
@@ -34,8 +35,8 @@ int main(void)
     for (volatile int i = 0; i < 1000000; i++)
         ;
 
-    st7789lcd_init(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT);
-    st7789lcd_clear(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, 0xFFFF);
+    st7789lcd_init(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT, DISPLAY_ORIEN);
+    st7789lcd_clear(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, 0xFFFF, DISPLAY_ORIEN, 320, 240);
 
     spi1_slaveset(MEM_CS, MEM_CS_PORT, 2);
 
@@ -89,7 +90,7 @@ int main(void)
         for (volatile int i = 0; i < 1000000; i++)
             ;
 
-        st7789lcd_print("EDGE ATMOS", 10, 60, 0xFD20, 0xFFFF, 1, 12, 16, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
-        st7789lcd_print("0123456789", 50, 10, 0, 0xFFFF, 1, 12, 16, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
+        st7789lcd_print("EDGE ATMOS", 0, 10, 0xFD20, 0xFFFF, 1, DISPLAY_ORIEN, 12, 16, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
+        st7789lcd_print("0123456789", 50, 10, 0, 0xFFFF, 1, DISPLAY_ORIEN, 12, 16, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
     }
 }
