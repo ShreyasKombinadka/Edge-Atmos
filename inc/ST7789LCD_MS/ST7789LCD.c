@@ -124,12 +124,12 @@ void st7789lcd_print(uint8_t *TEXT, uint16_t ROW_START_ADDR, uint16_t COL_START_
     {
         // Pixel location calculation
         uint16_t temp_ROW_END_ADDR = ROW_START_ADDR + (TEXT_ROW_PIXEL_COUNT * TEXT_SIZE);           // Row end address
-        uint16_t temp_COL_START_ADDR = COL_START_ADDR + (TEXT_ROW_PIXEL_COUNT * count * TEXT_SIZE); // Column start address
-        uint16_t temp_COL_END_ADDR = temp_COL_START_ADDR + (TEXT_ROW_PIXEL_COUNT * TEXT_SIZE);      // Column end address
+        uint16_t temp_COL_START_ADDR = COL_START_ADDR + (TEXT_COL_PIXEL_COUNT * count * TEXT_SIZE); // Column start address
+        uint16_t temp_COL_END_ADDR = temp_COL_START_ADDR + (TEXT_COL_PIXEL_COUNT * TEXT_SIZE);      // Column end address
+
+        st7789lcd_setsize(DC, DC_PORT, ROTATION, 0, ROW_START_ADDR, temp_COL_START_ADDR, temp_ROW_END_ADDR, temp_COL_END_ADDR); // Sets pixel box size
 
         uint16_t *bitmap = bitmap_char(TEXT[count]); // Charecter bitmap data
-
-        st7789lcd_setsize(DC, DC_PORT, ROTATION, ROW_START_ADDR, temp_COL_START_ADDR, temp_ROW_END_ADDR, temp_COL_END_ADDR); // Sets pixel box size
 
         // Memory Write
         gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
@@ -137,17 +137,17 @@ void st7789lcd_print(uint8_t *TEXT, uint16_t ROW_START_ADDR, uint16_t COL_START_
         gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
 
         // Print charecter
-        for (volatile int row = 0; row < TEXT_COL_PIXEL_COUNT; row++) // Row loop
+        for (volatile int row = 0; row < TEXT_ROW_PIXEL_COUNT; row++) // Row loop
         {
             int col_size = TEXT_SIZE;
             while (col_size > 0) // Text size scaling loop for rows
             {
-                for (volatile int col = 0; col < TEXT_ROW_PIXEL_COUNT; col++) // Column loop
+                for (volatile int col = 0; col < TEXT_COL_PIXEL_COUNT; col++) // Column loop
                 {
                     int row_size = TEXT_SIZE;
                     while (row_size > 0) // Text size scaling loop for columns
                     {
-                        if (bitmap[row] & (1 << ((TEXT_ROW_PIXEL_COUNT - 1) - col))) // For valid pixels
+                        if (bitmap[row] & (1 << ((TEXT_COL_PIXEL_COUNT - 1) - col))) // For valid pixels
                         {
                             // 16 bit pixel value for charecter
                             spi1_8wf1byte((uint8_t)(TEXT_COLOR >> 8));
@@ -178,7 +178,7 @@ void st7789lcd_clear(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, u
 {
     spi1_slaveselect(CS, CS_PORT, 1); // Select slave
 
-    st7789lcd_setsize(DC, DC_PORT, ROTATION, 0, 0, ROW_END, COL_END);
+    st7789lcd_setsize(DC, DC_PORT, ROTATION, 1, 0, 0, ROW_END, COL_END);
 
     // Memory Write
     gpio_setreset(DC, DC_PORT, 0);                         // Reset DC pin for cmd
@@ -248,25 +248,19 @@ void st7789lcd_setup(uint8_t DC, uint8_t DC_PORT, uint8_t ROTATION) // Sets disp
             ;
 }
 
-void st7789lcd_setsize(uint8_t DC, uint8_t DC_PORT, uint8_t ROTATION, uint16_t ROW_START, uint16_t COL_START, uint16_t ROW_END, uint16_t COL_END) // Sets pixel grid size
+void st7789lcd_setsize(uint8_t DC, uint8_t DC_PORT, uint8_t ROTATION, uint8_t FULL_SCREEN, uint16_t ROW_START, uint16_t COL_START, uint16_t ROW_END, uint16_t COL_END) // Sets pixel grid size
 {
-    uint16_t row_start = 0;
-    uint16_t row_end = 0;
-    uint16_t col_start = 0;
-    uint16_t col_end = 0;
-    if (ROTATION == 1 || ROTATION == 3)
+    uint16_t row_start = ROW_START;
+    uint16_t row_end = ROW_END - 1;
+    uint16_t col_start = COL_START;
+    uint16_t col_end = COL_END - 1;
+
+    if ((FULL_SCREEN == 1) && (ROTATION == 1 || ROTATION == 3))
     {
         row_start = COL_START;
         row_end = COL_END - 1;
         col_start = ROW_START;
         col_end = ROW_END - 1;
-    }
-    else
-    {
-        row_start = ROW_START;
-        row_end = ROW_END - 1;
-        col_start = COL_START;
-        col_end = COL_END - 1;
     }
 
     // Row Address Set
