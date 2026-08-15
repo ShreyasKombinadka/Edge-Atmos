@@ -2,7 +2,6 @@
 #include "./I2C_MS/I2C1.h"
 #include "./SPI_MS/SPI1.h"
 #include "./ASCII_MS/ASCII.h"
-#include "./LCD1602_MS/LCD1602.h"
 #include "./AHT10_MS/AHT10.h"
 #include "./BMP280_MS/BMP280.h"
 #include "./W25Q32_MS/W25Q32.h"
@@ -22,21 +21,24 @@
 #define TFT_RST_PORT 'A' // TFT display RST port
 #define TFT_LED 0        // TFT display LED
 #define TFT_LED_PORT 'A' // TFT display LED port
-#define DISPLAY_ORIEN 0  // TFT display orientation/rotation
+#define DISPLAY_ORIEN 3  // TFT display orientation/rotation
+
+// Text colors for display
+uint16_t BG_COLOR = 0xFFFF;
+uint16_t NORM_TXT_COLOR = 0;
+uint16_t TITLE_TXT_COLOR = 0xF800;
+uint16_t TEMP_TXT_COLOR = 0xFD20;
+uint16_t PRES_TXT_COLOR = 0x07E0;
+uint16_t HUMI_TXT_COLOR = 0x045F;
 
 int main(void)
 {
     i2c1_init();
     spi1_init(3, 0);
-    lcd1602_init();
-
-    lcd1602_clear();
-    lcd1602_print("Edge Atmos");
-    for (volatile int i = 0; i < 1000000; i++)
-        ;
 
     st7789lcd_init(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT, DISPLAY_ORIEN);
-    st7789lcd_clear(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, 0xFFFF, DISPLAY_ORIEN, 320, 240);
+    st7789lcd_clear(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, BG_COLOR, DISPLAY_ORIEN, 320, 240);
+    st7789lcd_print("EDGE ATMOS", 10, 40, TITLE_TXT_COLOR, BG_COLOR, 2, DISPLAY_ORIEN, 16, 12, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
 
     spi1_slaveset(MEM_CS, MEM_CS_PORT, 2);
 
@@ -63,34 +65,11 @@ int main(void)
         num_float4digi_ascii(humi, humi_char_arr);
         num_float4digi_ascii(pres, pres_char_arr);
 
-        lcd1602_clear();
-        lcd1602_print("Temp: ");
-        lcd1602_print(aht_temp_char_arr);
-        lcd1602_char(0xDF);
-        lcd1602_char('C');
-
-        lcd1602_row2();
-        lcd1602_print("Humi: ");
-        lcd1602_print(humi_char_arr);
-        lcd1602_char('%');
-
-        for (volatile int i = 0; i < 1000000; i++)
-            ;
-
-        lcd1602_clear();
-        lcd1602_print("Pres: ");
-        lcd1602_print(pres_char_arr);
-        lcd1602_print("hPa");
-
-        lcd1602_row2();
-        lcd1602_print("Temp: ");
-        lcd1602_print(bmp_temp_char_arr);
-        lcd1602_char(0xDF);
-        lcd1602_char('C');
-        for (volatile int i = 0; i < 1000000; i++)
-            ;
-
-        st7789lcd_print("EDGE ATMOS", 0, 10, 0xFD20, 0xFFFF, 1, DISPLAY_ORIEN, 16, 12, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
-        st7789lcd_print("0123456789", 50, 10, 0, 0xFFFF, 1, DISPLAY_ORIEN, 16, 12, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
+        st7789lcd_print("TEMPERATURE :", 100, 20, NORM_TXT_COLOR, BG_COLOR, 1, DISPLAY_ORIEN, 16, 12, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
+        st7789lcd_print(bmp_temp_char_arr, 100, 200, TEMP_TXT_COLOR, BG_COLOR, 1, DISPLAY_ORIEN, 16, 12, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
+        st7789lcd_print("PRESURE :", 120, 20, NORM_TXT_COLOR, BG_COLOR, 1, DISPLAY_ORIEN, 16, 12, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
+        st7789lcd_print(pres_char_arr, 120, 200, PRES_TXT_COLOR, BG_COLOR, 1, DISPLAY_ORIEN, 16, 12, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
+        st7789lcd_print("HUMIDITY :", 140, 20, NORM_TXT_COLOR, BG_COLOR, 1, DISPLAY_ORIEN, 16, 12, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
+        st7789lcd_print(humi_char_arr, 140, 200, HUMI_TXT_COLOR, BG_COLOR, 1, DISPLAY_ORIEN, 16, 12, TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT);
     }
 }
