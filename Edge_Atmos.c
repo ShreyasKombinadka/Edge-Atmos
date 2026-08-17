@@ -1,10 +1,10 @@
 #include <stdint.h>
 #include "./I2C_MS/I2C1.h"
 #include "./SPI_MS/SPI1.h"
-#include "./ASCII_MS/ASCII.h"
 #include "./AHT10_MS/AHT10.h"
 #include "./BMP280_MS/BMP280.h"
 #include "./W25Q32_MS/W25Q32.h"
+#include "./ASCII_MS/ASCII.h"
 #include "./ST7789LCD_MS/ST7789LCD.h"
 
 #define STM32F103xB
@@ -68,17 +68,16 @@ int main(void)
         num_float4digi_ascii(pres, pres_char_arr);
 
         st7789lcd_ofstrst();
-        st7789lcd_print("TEMPERATURE :", 100, 20, NORM_TXT_COLOR, 1);
-        st7789lcd_ofstrst();
-        st7789lcd_print(bmp_temp_char_arr, 100, 200, TEMP_TXT_COLOR, 1);
-        st7789lcd_print("'", 100, 5, TEMP_TXT_COLOR, 1);
+        st7789lcd_print("TEMPERATURE :", 100, 10, NORM_TXT_COLOR, 1);
+        st7789lcd_print(bmp_temp_char_arr, -16, 10, TEMP_TXT_COLOR, 1);
+        st7789lcd_print("'", -16, 5, TEMP_TXT_COLOR, 1);
 
-        st7789lcd_print("PRESURE :", 10, 20, NORM_TXT_COLOR, 1);
-        st7789lcd_print(pres_char_arr, 10, 200, PRES_TXT_COLOR, 1);
-        st7789lcd_print("hpa", 10, 5, PRES_TXT_COLOR, 1);
+        st7789lcd_print("PRESURE :", 10, -220, NORM_TXT_COLOR, 1);
+        st7789lcd_print(pres_char_arr, -16, 10, PRES_TXT_COLOR, 1);
+        st7789lcd_print("hpa", -16, 5, PRES_TXT_COLOR, 1);
 
-        st7789lcd_print("HUMIDITY :", 10, 20, NORM_TXT_COLOR, 1);
-        st7789lcd_print(humi_char_arr, 10, 200, HUMI_TXT_COLOR, 1);
-        st7789lcd_print("%", 10, 5, HUMI_TXT_COLOR, 1);
+        st7789lcd_print("HUMIDITY :", 10, -220, NORM_TXT_COLOR, 1);
+        st7789lcd_print(humi_char_arr, -16, 10, HUMI_TXT_COLOR, 1);
+        st7789lcd_print("%", -16, 5, HUMI_TXT_COLOR, 1);
     }
 }

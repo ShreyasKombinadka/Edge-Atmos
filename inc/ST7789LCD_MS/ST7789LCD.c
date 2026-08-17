@@ -268,7 +268,7 @@ void st7789lcd_print(uint8_t *TEXT, uint16_t ROW_OFFSET, uint16_t COL_OFFSET, ui
         uint16_t temp_col_start_addr = (st7789lcd.COL_END_ADDR + COL_OFFSET) + (st7789lcd.TEXT_COL_PIXEL_COUNT * count * TEXT_SIZE); // Column start address
         uint16_t temp_col_end_addr = temp_col_start_addr + (st7789lcd.TEXT_COL_PIXEL_COUNT * TEXT_SIZE);                             // Column end address
 
-        st7789lcd_setsize(0, ROW_OFFSET, temp_col_start_addr, temp_row_end_addr, temp_col_end_addr); // Sets pixel box size
+        st7789lcd_setsize(0, (st7789lcd.ROW_END_ADDR + ROW_OFFSET), temp_col_start_addr, temp_row_end_addr, temp_col_end_addr); // Sets pixel box size
 
         uint16_t *bitmap = bitmap_char(TEXT[count]); // Charecter bitmap data
 
