@@ -21,7 +21,7 @@
 #define TFT_RST_PORT 'A' // TFT display RST port
 #define TFT_LED 0        // TFT display LED
 #define TFT_LED_PORT 'A' // TFT display LED port
-#define DISPLAY_ORIEN 3  // TFT display orientation/rotation
+#define DISPLAY_ORIEN 1  // TFT display orientation/rotation
 
 // Text colors for display
 uint16_t SCREEN_COLOR = 0xFFFF;
@@ -39,7 +39,7 @@ int main(void)
     st7789lcd_init(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT, DISPLAY_ORIEN, 320, 240);
     st7789lcd_clear(SCREEN_COLOR);
     st7789lcd_settext(16, 12);
-    st7789lcd_ofstrst();
+    st7789lcd_addrst();
     st7789lcd_print("EDGE ATMOS", 10, 40, TITLE_TXT_COLOR, 2);
 
     spi1_slaveset(MEM_CS, MEM_CS_PORT, 2);
@@ -67,17 +67,22 @@ int main(void)
         num_float4digi_ascii(humi, humi_char_arr);
         num_float4digi_ascii(pres, pres_char_arr);
 
-        st7789lcd_ofstrst();
+        st7789lcd_addrst();
         st7789lcd_print("TEMPERATURE :", 100, 10, NORM_TXT_COLOR, 1);
-        st7789lcd_print(bmp_temp_char_arr, -16, 10, TEMP_TXT_COLOR, 1);
+        st7789lcd_colrst();
+        st7789lcd_print(bmp_temp_char_arr, -16, 200, TEMP_TXT_COLOR, 1);
         st7789lcd_print("'", -16, 5, TEMP_TXT_COLOR, 1);
 
-        st7789lcd_print("PRESURE :", 10, -220, NORM_TXT_COLOR, 1);
-        st7789lcd_print(pres_char_arr, -16, 10, PRES_TXT_COLOR, 1);
+        st7789lcd_colrst();
+        st7789lcd_print("PRESURE :", 10, 10, NORM_TXT_COLOR, 1);
+        st7789lcd_colrst();
+        st7789lcd_print(pres_char_arr, -16, 200, PRES_TXT_COLOR, 1);
         st7789lcd_print("hpa", -16, 5, PRES_TXT_COLOR, 1);
 
-        st7789lcd_print("HUMIDITY :", 10, -220, NORM_TXT_COLOR, 1);
-        st7789lcd_print(humi_char_arr, -16, 10, HUMI_TXT_COLOR, 1);
+        st7789lcd_colrst();
+        st7789lcd_print("HUMIDITY :", 10, 10, NORM_TXT_COLOR, 1);
+        st7789lcd_colrst();
+        st7789lcd_print(humi_char_arr, -16, 200, HUMI_TXT_COLOR, 1);
         st7789lcd_print("%", -16, 5, HUMI_TXT_COLOR, 1);
     }
 }
