@@ -1,0 +1,4 @@
+#ifndef DYNAMIC_WEATHER_H
+#define DYNAMIC_WEATHER_H
+
+#endif
