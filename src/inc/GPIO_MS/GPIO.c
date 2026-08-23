@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 #define STM32F103xB
-#include "stm32f1xx.h"
+#include "../STM32F103_CMSIS/stm32f1xx.h"
 
 void gpio_en(uint8_t GPIO_PORT) // GPIO PORT CLK enable
 {

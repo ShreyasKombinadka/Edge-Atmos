@@ -7,7 +7,8 @@
 #include "W25Q32_MS/W25Q32.h"
 #include "ASCII_MS/ASCII.h"
 #include "ST7789LCD_MS/ST7789LCD.h"
-#include "MS_COLOR/COLOR.h"
+#include "COLOR_MS/COLOR.h"
+#include "DYNAWEAT_MS/DYNAWEAT.h"
 
 #define STM32F103xB
 #include "STM32F103_CMSIS/stm32f1xx.h"
@@ -61,10 +62,12 @@ int main(void)
         num_float4digi_ascii(humi, humi_char_arr);
         num_float4digi_ascii(pres, pres_char_arr);
 
+        uint16_t temp_color = dynaweat_temp(bmp_temp);
+
         st7789lcd_addrst();
         st7789lcd_print("TEMPERATURE :", 100, 10, MS_BLACK_16, 1);
         st7789lcd_colrst();
-        st7789lcd_print(bmp_temp_char_arr, -16, 200, MS_YELLOW_16, 1);
+        st7789lcd_print(bmp_temp_char_arr, -16, 200, temp_color, 1);
         st7789lcd_print("'", -16, 5, MS_BLACK_16, 1);
 
         st7789lcd_colrst();

@@ -1,9 +1,9 @@
 #include "SPI1.h"
-#include "./GPIO_MS/GPIO.h"
+#include "../GPIO_MS/GPIO.h"
 #include <stdint.h>
 
 #define STM32F103xB
-#include "stm32f1xx.h"
+#include "../STM32F103_CMSIS/stm32f1xx.h"
 
 /* SPI1 Initialisation
 CPHA & CPOL

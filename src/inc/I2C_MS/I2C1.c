@@ -1,9 +1,9 @@
 #include "I2C1.h"
-#include "./GPIO_MS/GPIO.h"
+#include "../GPIO_MS/GPIO.h"
 #include <stdint.h>
 
 #define STM32F103xB
-#include "stm32f1xx.h"
+#include "../STM32F103_CMSIS/stm32f1xx.h"
 
 // Start I2C1 block
 void i2c1_init(void)
