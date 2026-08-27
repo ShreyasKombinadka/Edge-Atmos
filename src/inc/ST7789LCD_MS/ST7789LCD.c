@@ -1,7 +1,7 @@
 #include "ST7789LCD.h"
 #include "../SPI_MS/SPI1.h"
 #include "../GPIO_MS/GPIO.h"
-#include "../MS_FONT/BITMAP.h"
+#include "../FONT_MS/BITMAP.h"
 
 #include <stdint.h>
 

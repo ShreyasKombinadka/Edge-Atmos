@@ -24,7 +24,7 @@
 #define TFT_RST_PORT 'A' // TFT display RST port
 #define TFT_LED 0        // TFT display LED
 #define TFT_LED_PORT 'A' // TFT display LED port
-#define DISPLAY_ORIEN 1  // TFT display orientation/rotation
+#define DISPLAY_ORIEN 3  // TFT display orientation/rotation
 
 int main(void)
 {
@@ -62,7 +62,9 @@ int main(void)
         num_float4digi_ascii(humi, humi_char_arr);
         num_float4digi_ascii(pres, pres_char_arr);
 
-        uint16_t temp_color = dynaweat_temp(bmp_temp);
+        uint16_t temp_color = dynaweat_temp16(bmp_temp);
+        uint16_t pres_color = dynaweat_pres16(pres);
+        uint16_t humi_color = dynaweat_humi16(humi);
 
         st7789lcd_addrst();
         st7789lcd_print("TEMPERATURE :", 100, 10, MS_BLACK_16, 1);
@@ -73,13 +75,13 @@ int main(void)
         st7789lcd_colrst();
         st7789lcd_print("PRESURE :", 10, 10, MS_BLACK_16, 1);
         st7789lcd_colrst();
-        st7789lcd_print(pres_char_arr, -16, 200, MS_GREEN_16, 1);
+        st7789lcd_print(pres_char_arr, -16, 200, pres_color, 1);
         st7789lcd_print("hpa", -16, 5, MS_BLACK_16, 1);
 
         st7789lcd_colrst();
         st7789lcd_print("HUMIDITY :", 10, 10, MS_BLACK_16, 1);
         st7789lcd_colrst();
-        st7789lcd_print(humi_char_arr, -16, 200, MS_BLUE_16, 1);
+        st7789lcd_print(humi_char_arr, -16, 200, humi_color, 1);
         st7789lcd_print("%", -16, 5, MS_BLACK_16, 1);
     }
 }
