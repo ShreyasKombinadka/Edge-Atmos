@@ -250,6 +250,14 @@ void st7789lcd_settext(uint8_t TEXT_ROW_PIXEL_COUNT, uint8_t TEXT_COL_PIXEL_COUN
     st7789lcd.TEXT_COL_PIXEL_COUNT = TEXT_COL_PIXEL_COUNT;
 }
 
+void st7789lcd_setbox(uint8_t BOX_NUM, uint16_t RS, uint16_t RE, uint16_t CS, uint16_t CE)
+{
+    st7789lcd.TEXT_BOX[BOX_NUM * 4] = RS;
+    st7789lcd.TEXT_BOX[(BOX_NUM * 4) + 1] = RE;
+    st7789lcd.TEXT_BOX[(BOX_NUM * 4) + 2] = CS;
+    st7789lcd.TEXT_BOX[(BOX_NUM * 4) + 3] = CE;
+}
+
 void st7789lcd_rowrst() // Resets row addr to 0
 {
     st7789lcd.ROW_ADDR = 0;

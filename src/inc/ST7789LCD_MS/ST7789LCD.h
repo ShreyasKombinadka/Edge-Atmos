@@ -24,6 +24,8 @@ struct ST7789LCD
 
     uint16_t ROW_ADDR;
     uint16_t COL_ADDR;
+
+    uint16_t TEXT_BOX[16];
 };
 
 void st7789lcd_init(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, uint8_t RST, uint8_t RST_PORT, uint8_t LED, uint8_t LED_PORT, uint8_t ROTATION, uint16_t HEIGHT, uint16_t WIDTH); // TFT(ST7789) LCD display initialisation
