@@ -22,9 +22,10 @@ struct ST7789LCD
     uint16_t HEIGHT;
     uint16_t WIDTH;
 
-    uint16_t ROW_ADDR;
-    uint16_t COL_ADDR;
+    uint16_t ROW_ADDR[4];
+    uint16_t COL_ADDR[4];
 
+    uint8_t BOX_NUM;
     uint16_t TEXT_BOX[16];
 };
 
