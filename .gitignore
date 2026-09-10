@@ -1,3 +1,8 @@
 # VS code workspace file
 Edge_Atmos_vscode.code-workspace
 .vscode
+
+# Kicad generated files
+PCB/Edge_Atmos_PCB-backups
+PCB/Edge_Atmos_PCB.kicad_prl
+PCB/.history/
