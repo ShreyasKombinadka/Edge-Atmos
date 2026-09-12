@@ -298,35 +298,32 @@ void st7789lcd_print(uint8_t *TEXT, uint16_t ROW_OFFSET, uint16_t COL_OFFSET, ui
     spi1_slaveselect(st7789lcd.CS, st7789lcd.CS_PORT, 1); // Select slave
 
     uint8_t count = 0;          // Charecter counter
+    uint8_t col_count = 0;      // Number of charecters present in column
     while (TEXT[count] != '\0') // Charecter check
     {
         // Pixel location calculation
-        uint16_t temp_row_start_addr = BOX_RS + st7789lcd.ROW_ADDR + ROW_OFFSET;                                                        // Row start address
-        uint16_t temp_row_end_addr = st7789lcd.ROW_ADDR + ROW_OFFSET + (st7789lcd.TEXT_ROW_PIXEL_COUNT * TEXT_SIZE);                    // Row end address
-        uint16_t temp_col_start_addr = BOX_CS + st7789lcd.COL_ADDR + COL_OFFSET + (st7789lcd.TEXT_COL_PIXEL_COUNT * count * TEXT_SIZE); // Column start address
-        uint16_t temp_col_end_addr = temp_col_start_addr + (st7789lcd.TEXT_COL_PIXEL_COUNT * TEXT_SIZE);                                // Column end address
+        uint16_t temp_row_start_addr = BOX_RS + st7789lcd.ROW_ADDR + ROW_OFFSET;                                                            // Row start address
+        uint16_t temp_row_end_addr = temp_row_start_addr + (st7789lcd.TEXT_ROW_PIXEL_COUNT * TEXT_SIZE);                                    // Row end address
+        uint16_t temp_col_start_addr = BOX_CS + st7789lcd.COL_ADDR + COL_OFFSET + (st7789lcd.TEXT_COL_PIXEL_COUNT * col_count * TEXT_SIZE); // Column start address
+        uint16_t temp_col_end_addr = temp_col_start_addr + (st7789lcd.TEXT_COL_PIXEL_COUNT * TEXT_SIZE);                                    // Column end address
 
-        //
-        if ((BOX_RS + st7789lcd.ROW_ADDR + ROW_OFFSET + (st7789lcd.TEXT_ROW_PIXEL_COUNT * TEXT_SIZE)) >= (BOX_RE - (st7789lcd.TEXT_ROW_PIXEL_COUNT * count * TEXT_SIZE)))
+        // Box row end border checker
+        if (temp_row_end_addr >= BOX_RE)
         {
             temp_row_start_addr = BOX_RS;
             temp_row_end_addr = temp_row_start_addr + (st7789lcd.TEXT_ROW_PIXEL_COUNT * TEXT_SIZE);
             temp_col_start_addr = BOX_CS;
             temp_col_end_addr = temp_col_start_addr + (st7789lcd.TEXT_COL_PIXEL_COUNT * TEXT_SIZE);
+            col_count = 0; // Reset char count per column
         }
-        else if ((BOX_CS + st7789lcd.COL_ADDR + COL_OFFSET + (st7789lcd.TEXT_COL_PIXEL_COUNT * count * TEXT_SIZE) + (st7789lcd.TEXT_COL_PIXEL_COUNT * TEXT_SIZE)) >= (BOX_CE - (st7789lcd.TEXT_COL_PIXEL_COUNT * count * TEXT_SIZE)))
+        // Box col end border checker
+        else if (temp_col_end_addr >= BOX_CE)
         {
             temp_row_start_addr = temp_row_end_addr;
             temp_row_end_addr = temp_row_start_addr + (st7789lcd.TEXT_ROW_PIXEL_COUNT * TEXT_SIZE);
             temp_col_start_addr = BOX_CS;
             temp_col_end_addr = temp_col_start_addr + (st7789lcd.TEXT_COL_PIXEL_COUNT * TEXT_SIZE);
-        }
-        else
-        {
-            temp_row_start_addr = BOX_RS + st7789lcd.ROW_ADDR + ROW_OFFSET;
-            temp_row_end_addr = temp_row_start_addr + (st7789lcd.TEXT_ROW_PIXEL_COUNT * TEXT_SIZE);
-            temp_col_start_addr = BOX_CS + st7789lcd.COL_ADDR + COL_OFFSET + (st7789lcd.TEXT_COL_PIXEL_COUNT * count * TEXT_SIZE);
-            temp_col_end_addr = temp_col_start_addr + (st7789lcd.TEXT_COL_PIXEL_COUNT * TEXT_SIZE);
+            col_count = 0; // Reset char count per column
         }
 
         st7789lcd_setsize(0, temp_row_start_addr, temp_col_start_addr, temp_row_end_addr, temp_col_end_addr); // Sets pixel box size
@@ -370,7 +367,8 @@ void st7789lcd_print(uint8_t *TEXT, uint16_t ROW_OFFSET, uint16_t COL_OFFSET, ui
             }
         }
 
-        count++; // Charecter location incrimenting
+        count++;     // Charecter location incrimenting
+        col_count++; // Char count per col incrimenting
 
         if (TEXT[count] == '\0')
         {
