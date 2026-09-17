@@ -7,7 +7,7 @@
 
 static struct ST7789LCD st7789lcd;
 
-void st7789lcd_init(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, uint8_t RST, uint8_t RST_PORT, uint8_t LED, uint8_t LED_PORT, uint8_t ROTATION, uint16_t HEIGHT, uint16_t WIDTH) // TFT(ST7789) LCD display initialisation
+void st7789lcd_pinset(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, uint8_t RST, uint8_t RST_PORT, uint8_t LED, uint8_t LED_PORT) // TFT(ST7789) LCD display pin connections
 {
     st7789lcd.CS = CS;
     st7789lcd.CS_PORT = CS_PORT;
@@ -17,39 +17,44 @@ void st7789lcd_init(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, ui
     st7789lcd.RST_PORT = RST_PORT;
     st7789lcd.LED = LED;
     st7789lcd.LED_PORT = LED_PORT;
+}
 
+void st7789lcd_dispset(uint8_t ROTATION, uint16_t HEIGHT, uint16_t WIDTH) // TFT(ST7789) LCD display parameters
+{
     st7789lcd.ROTATION = ROTATION;
-
     st7789lcd.HEIGHT = HEIGHT;
     st7789lcd.WIDTH = WIDTH;
+}
 
-    gpio_en(DC_PORT);  // Enable DC pin port
-    gpio_en(RST_PORT); // Enable RST pin port
+void st7789lcd_init() // TFT(ST7789) LCD display initialisation
+{
+    gpio_en(st7789lcd.DC_PORT);  // Enable DC pin port
+    gpio_en(st7789lcd.RST_PORT); // Enable RST pin port
 
-    gpio_setup(DC, DC_PORT, 3, 0);   // Set as output at 2MHz push pull mode
-    gpio_setup(RST, RST_PORT, 3, 0); // Set as output at 2MHz push pull mode
+    gpio_setup(st7789lcd.DC, st7789lcd.DC_PORT, 3, 0);   // Set as output at 2MHz push pull mode
+    gpio_setup(st7789lcd.RST, st7789lcd.RST_PORT, 3, 0); // Set as output at 2MHz push pull mode
 
-    spi1_slaveset(CS, CS_PORT, 3); // Set CS pin
+    spi1_slaveset(st7789lcd.CS, st7789lcd.CS_PORT, 3); // Set CS pin
 
-    if (!(LED_PORT == 'V' || LED_PORT == 'v')) // If the LED pin is not VCC
+    if (!(st7789lcd.LED_PORT == 'V' || st7789lcd.LED_PORT == 'v')) // If the LED pin is not VCC
     {
-        gpio_en(LED_PORT);               // Enable LED pin port
-        gpio_setup(LED, LED_PORT, 3, 0); // Set as output at 2MHz push pull mode
-        gpio_setreset(LED, LED_PORT, 1); // Set LED pin
+        gpio_en(st7789lcd.LED_PORT);                         // Enable LED pin port
+        gpio_setup(st7789lcd.LED, st7789lcd.LED_PORT, 3, 0); // Set as output at 2MHz push pull mode
+        gpio_setreset(st7789lcd.LED, st7789lcd.LED_PORT, 1); // Set LED pin
     }
 
-    gpio_setreset(RST, RST_PORT, 0);        // Reset RST pin
-    for (volatile int i = 0; i <= 160; i++) // Delay of ~50mS
+    gpio_setreset(st7789lcd.RST, st7789lcd.RST_PORT, 0); // Reset RST pin
+    for (volatile int i = 0; i <= 160; i++)              // Delay of ~50mS
         for (volatile int j = 0; j <= 160; j++)
             ;
-    gpio_setreset(RST, RST_PORT, 1); // Set RST pin
+    gpio_setreset(st7789lcd.RST, st7789lcd.RST_PORT, 1); // Set RST pin
 
-    spi1_slaveselect(CS, CS_PORT, 1); // Select slave
+    spi1_slaveselect(st7789lcd.CS, st7789lcd.CS_PORT, 1); // Select slave
 
     // Software Reset
-    gpio_setreset(DC, DC_PORT, 0);           // Reset DC pin for cmd
-    spi1_8w1byte(0x01);                      // Software Reset cmd
-    for (volatile int i = 0; i <= 1100; i++) // Delay of ~150mS
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 0); // Reset DC pin for cmd
+    spi1_8w1byte(0x01);                                // Software Reset cmd
+    for (volatile int i = 0; i <= 1100; i++)           // Delay of ~150mS
         for (volatile int j = 0; j <= 1100; j++)
             ;
 
@@ -62,56 +67,56 @@ void st7789lcd_init(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, ui
     st7789lcd_setup(); // Sets display orientation and RGB color path
 
     // Porch Setting
-    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
-    spi1_8w1byte(0xB2);            // Porch Setting cmd
-    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
-    spi1_8w1byte(0x0C);            // Data Parameter
-    spi1_8w1byte(0x0C);            // Data Parameter
-    spi1_8w1byte(0x00);            // Data Parameter
-    spi1_8w1byte(0x33);            // Data Parameter
-    spi1_8w1byte(0x33);            // Data Parameter
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 0); // Reset DC pin for cmd
+    spi1_8w1byte(0xB2);                                // Porch Setting cmd
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 1); // Set DC pin for data
+    spi1_8w1byte(0x0C);                                // Data Parameter
+    spi1_8w1byte(0x0C);                                // Data Parameter
+    spi1_8w1byte(0x00);                                // Data Parameter
+    spi1_8w1byte(0x33);                                // Data Parameter
+    spi1_8w1byte(0x33);                                // Data Parameter
 
     // Gate Control
-    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
-    spi1_8w1byte(0xB7);            // Gate Control cmd
-    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
-    spi1_8w1byte(0x35);            // Data Parameter
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 0); // Reset DC pin for cmd
+    spi1_8w1byte(0xB7);                                // Gate Control cmd
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 1); // Set DC pin for data
+    spi1_8w1byte(0x35);                                // Data Parameter
 
     // VCOM Setting
-    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
-    spi1_8w1byte(0xBB);            // VCOM Setting cmd
-    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
-    spi1_8w1byte(0x19);            // Data Parameter
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 0); // Reset DC pin for cmd
+    spi1_8w1byte(0xBB);                                // VCOM Setting cmd
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 1); // Set DC pin for data
+    spi1_8w1byte(0x19);                                // Data Parameter
 
     // VRH Set
-    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
-    spi1_8w1byte(0xC3);            // VRH Set cmd
-    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
-    spi1_8w1byte(0x12);            // Data Parameter
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 0); // Reset DC pin for cmd
+    spi1_8w1byte(0xC3);                                // VRH Set cmd
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 1); // Set DC pin for data
+    spi1_8w1byte(0x12);                                // Data Parameter
 
     // VDV Set
-    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
-    spi1_8w1byte(0xC4);            // VDV Set cmd
-    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
-    spi1_8w1byte(0x20);            // Data Parameter
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 0); // Reset DC pin for cmd
+    spi1_8w1byte(0xC4);                                // VDV Set cmd
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 1); // Set DC pin for data
+    spi1_8w1byte(0x20);                                // Data Parameter
 
     // Frame Rate Control in Normal Mode
-    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
-    spi1_8w1byte(0xC6);            // Frame Rate Control in Normal Mode cmd
-    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
-    spi1_8w1byte(0x0F);            // Data Parameter(60Hz refresh rate)
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 0); // Reset DC pin for cmd
+    spi1_8w1byte(0xC6);                                // Frame Rate Control in Normal Mode cmd
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 1); // Set DC pin for data
+    spi1_8w1byte(0x0F);                                // Data Parameter(60Hz refresh rate)
 
     // Power Control 1
-    gpio_setreset(DC, DC_PORT, 0); // Reset DC pin for cmd
-    spi1_8w1byte(0xD0);            // Power Control 1 cmd
-    gpio_setreset(DC, DC_PORT, 1); // Set DC pin for data
-    spi1_8w1byte(0xA4);            // Data Parameter
-    spi1_8w1byte(0xA1);            // Data Parameter
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 0); // Reset DC pin for cmd
+    spi1_8w1byte(0xD0);                                // Power Control 1 cmd
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 1); // Set DC pin for data
+    spi1_8w1byte(0xA4);                                // Data Parameter
+    spi1_8w1byte(0xA1);                                // Data Parameter
 
     // Display Inversion OFF
-    gpio_setreset(DC, DC_PORT, 0);         // Reset DC pin for cmd
-    spi1_8w1byte(0x20);                    // Display Inversion OFF cmd
-    for (volatile int i = 0; i <= 80; i++) // Delay of ~10mS
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 0); // Reset DC pin for cmd
+    spi1_8w1byte(0x20);                                // Display Inversion OFF cmd
+    for (volatile int i = 0; i <= 80; i++)             // Delay of ~10mS
         for (volatile int j = 0; j <= 80; j++)
             ;
 
@@ -127,7 +132,7 @@ void st7789lcd_init(uint8_t CS, uint8_t CS_PORT, uint8_t DC, uint8_t DC_PORT, ui
         for (volatile int j = 0; j <= 160; j++)
             ;
 
-    spi1_slaveselect(CS, CS_PORT, 0); // De-select slave device
+    spi1_slaveselect(st7789lcd.CS, st7789lcd.CS_PORT, 0); // De-select slave device
 }
 
 void st7789lcd_setup() // Sets display orientation and RGB settings
@@ -252,9 +257,34 @@ void st7789lcd_setbox(uint8_t BOX_NUM, uint16_t RS, uint16_t RE, uint16_t CS, ui
     st7789lcd.TEXT_BOX[(BOX_NUM * 4) + 3] = CE; // Col end
 }
 
-void st7789lcd_inbox(uint8_t BOX_NUM)
+void st7789lcd_inbox(uint8_t BOX_NUM) // Required box call
 {
     st7789lcd.BOX_NUM = BOX_NUM;
+}
+
+void st7789lcd_fillbox(uint16_t COLOR) // Fill box with single color
+{
+    // Box coords
+    uint16_t BOX_RS = st7789lcd.TEXT_BOX[st7789lcd.BOX_NUM * 4];       // Row start
+    uint16_t BOX_RE = st7789lcd.TEXT_BOX[(st7789lcd.BOX_NUM * 4) + 1]; // Row end
+    uint16_t BOX_CS = st7789lcd.TEXT_BOX[(st7789lcd.BOX_NUM * 4) + 2]; // Col start
+    uint16_t BOX_CE = st7789lcd.TEXT_BOX[(st7789lcd.BOX_NUM * 4) + 3]; // Col end
+
+    spi1_slaveselect(st7789lcd.CS, st7789lcd.CS_PORT, 1); // Select slave
+
+    st7789lcd_setsize(1, BOX_RS, BOX_CS, BOX_RE, BOX_CE); // Box size
+
+    // Memory Write
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 0);                         // Reset DC pin for cmd
+    spi1_8w1byte(0x2C);                                                        // Memory Write cmd
+    gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 1);                         // Set DC pin for data
+    for (volatile int i = 0; i < ((BOX_RE - BOX_RS) * (BOX_CE - BOX_CS)); i++) // Set box to the required RGB color
+    {
+        spi1_8wf1byte((uint8_t)(COLOR >> 8));
+        spi1_8wf1byte((uint8_t)COLOR);
+    }
+
+    spi1_slaveselect(st7789lcd.CS, st7789lcd.CS_PORT, 0); // De-select slave device
 }
 
 void st7789lcd_rowrst() // Resets row addr to 0
@@ -290,6 +320,7 @@ void st7789lcd_settext(uint8_t TEXT_ROW_PIXEL_COUNT, uint8_t TEXT_COL_PIXEL_COUN
 
 void st7789lcd_print(uint8_t *TEXT, uint16_t ROW_OFFSET, uint16_t COL_OFFSET, uint16_t TEXT_COLOR, uint8_t TEXT_SIZE) // Display write function
 {
+    // Box coords
     uint16_t BOX_RS = st7789lcd.TEXT_BOX[st7789lcd.BOX_NUM * 4];       // Row start
     uint16_t BOX_RE = st7789lcd.TEXT_BOX[(st7789lcd.BOX_NUM * 4) + 1]; // Row end
     uint16_t BOX_CS = st7789lcd.TEXT_BOX[(st7789lcd.BOX_NUM * 4) + 2]; // Col start

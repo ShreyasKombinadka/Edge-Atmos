@@ -31,7 +31,9 @@ int main(void)
     i2c1_init();
     spi1_init(3, 0);
 
-    st7789lcd_init(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT, DISPLAY_ORIEN, 320, 240);
+    st7789lcd_pinset(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT);
+    st7789lcd_dispset(DISPLAY_ORIEN, 320, 240);
+    st7789lcd_init();
     st7789lcd_clearall(MS_WHITE_16);
     st7789lcd_setbox(1, 0, 240, 0, 240);
     st7789lcd_inbox(1);
