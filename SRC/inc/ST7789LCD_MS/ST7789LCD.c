@@ -223,7 +223,7 @@ void st7789lcd_setsize(uint8_t FULL_SCREEN, uint16_t ROW_START, uint16_t COL_STA
     spi1_8w1byte((uint8_t)col_end);
 }
 
-void st7789lcd_clear(uint16_t BG_COLOR) // Display clear
+void st7789lcd_clearall(uint16_t BG_COLOR) // Display clear
 {
     st7789lcd.BG_COLOR = BG_COLOR; // Save back ground color
 
@@ -333,9 +333,10 @@ void st7789lcd_print(uint8_t *TEXT, uint16_t ROW_OFFSET, uint16_t COL_OFFSET, ui
                 temp_col_start_addr = BOX_CS + temp_prev_col_addr + COL_OFFSET; // Reset to the initial col addr
             }
 
-            // Update the end addr for the new start addr
+            // Update the new end addr for the new start addr
             temp_row_end_addr = temp_row_start_addr + (st7789lcd.TEXT_ROW_PIXEL_COUNT * TEXT_SIZE);
             temp_col_end_addr = temp_col_start_addr + (st7789lcd.TEXT_COL_PIXEL_COUNT * TEXT_SIZE);
+
             col_count = 0; // Reset char count per column
         }
 
