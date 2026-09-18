@@ -34,11 +34,15 @@ int main(void)
     st7789lcd_pinset(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT);
     st7789lcd_dispset(DISPLAY_ORIEN, 320, 240);
     st7789lcd_init();
+
     st7789lcd_clearall(MS_WHITE_16);
-    st7789lcd_setbox(1, 0, 240, 0, 240);
-    st7789lcd_inbox(1);
     st7789lcd_settext(16, 12);
-    st7789lcd_addrst();
+
+    st7789lcd_setbox(1, 0, 60, 0, 320);
+    st7789lcd_setbox(2, 60, 150, 0, 200);
+    st7789lcd_setbox(3, 60, 150, 200, 300);
+
+    st7789lcd_inbox(1);
     st7789lcd_print("EDGE ATMOS", 10, 40, MS_BRIGHT_RED_16, 2);
 
     spi1_slaveset(MEM_CS, MEM_CS_PORT, 2);
@@ -47,6 +51,17 @@ int main(void)
 
     uint8_t FACTORY_CALIBRATION_DATA[24];
     bmp280_init(FACTORY_CALIBRATION_DATA);
+
+    st7789lcd_inbox(2);
+    st7789lcd_fillbox(MS_YELLOW_16);
+    st7789lcd_print("TEMPERATURE", 10, 10, MS_BLACK_16, 1);
+    st7789lcd_colrst();
+    st7789lcd_print("PRESURE", 10, 10, MS_BLACK_16, 1);
+    st7789lcd_colrst();
+    st7789lcd_print("HUMIDITY", 10, 10, MS_BLACK_16, 1);
+
+    st7789lcd_inbox(3);
+    st7789lcd_fillbox(MS_CYAN_16);
 
     while (1)
     {
@@ -71,21 +86,10 @@ int main(void)
         uint16_t humi_color = dynaweat_humi16(humi);
 
         st7789lcd_addrst();
-        st7789lcd_print("TEMPERATURE :", 100, 10, MS_BLACK_16, 1);
+        st7789lcd_print(bmp_temp_char_arr, 10, 10, temp_color, 1);
         st7789lcd_colrst();
-        st7789lcd_print(bmp_temp_char_arr, -16, 200, temp_color, 1);
-        st7789lcd_print("'", -16, 5, MS_BLACK_16, 1);
-
+        st7789lcd_print(pres_char_arr, 10, 10, pres_color, 1);
         st7789lcd_colrst();
-        st7789lcd_print("PRESURE :", 10, 10, MS_BLACK_16, 1);
-        st7789lcd_colrst();
-        st7789lcd_print(pres_char_arr, -16, 200, pres_color, 1);
-        st7789lcd_print("hpa", -16, 5, MS_BLACK_16, 1);
-
-        st7789lcd_colrst();
-        st7789lcd_print("HUMIDITY :", 10, 10, MS_BLACK_16, 1);
-        st7789lcd_colrst();
-        st7789lcd_print(humi_char_arr, -16, 200, humi_color, 1);
-        st7789lcd_print("%", -16, 5, MS_BLACK_16, 1);
+        st7789lcd_print(humi_char_arr, 10, 10, humi_color, 1);
     }
 }
