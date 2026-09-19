@@ -14,13 +14,13 @@ struct ST7789LCD
     uint8_t LED;
     uint8_t LED_PORT;
 
-    uint8_t ROTATION;
-    uint16_t BG_COLOR;
-    uint8_t TEXT_ROW_PIXEL_COUNT;
-    uint8_t TEXT_COL_PIXEL_COUNT;
-
     uint16_t HEIGHT;
     uint16_t WIDTH;
+    uint8_t ROTATION;
+
+    uint16_t BG_COLOR[4];
+    uint8_t TEXT_ROW_PIXEL_COUNT;
+    uint8_t TEXT_COL_PIXEL_COUNT;
 
     uint16_t ROW_ADDR[10];
     uint16_t COL_ADDR[10];

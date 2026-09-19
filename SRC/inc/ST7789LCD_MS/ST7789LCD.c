@@ -230,8 +230,6 @@ void st7789lcd_setsize(uint8_t FULL_SCREEN, uint16_t ROW_START, uint16_t COL_STA
 
 void st7789lcd_clearall(uint16_t BG_COLOR) // Display clear
 {
-    st7789lcd.BG_COLOR = BG_COLOR; // Save back ground color
-
     spi1_slaveselect(st7789lcd.CS, st7789lcd.CS_PORT, 1); // Select slave
 
     st7789lcd_setsize(1, 0, 0, st7789lcd.HEIGHT, st7789lcd.WIDTH);
@@ -247,6 +245,9 @@ void st7789lcd_clearall(uint16_t BG_COLOR) // Display clear
     }
 
     spi1_slaveselect(st7789lcd.CS, st7789lcd.CS_PORT, 0); // De-select slave device
+
+    for (volatile int i = 0; i < 4; i++)
+        st7789lcd.BG_COLOR[i] = BG_COLOR; // Save default back ground color
 }
 
 void st7789lcd_setbox(uint8_t BOX_NUM, uint16_t RS, uint16_t RE, uint16_t CS, uint16_t CE) // Saves box info in the text box array
@@ -272,7 +273,7 @@ void st7789lcd_fillbox(uint16_t COLOR) // Fill box with single color
 
     spi1_slaveselect(st7789lcd.CS, st7789lcd.CS_PORT, 1); // Select slave
 
-    st7789lcd_setsize(1, BOX_RS, BOX_CS, BOX_RE, BOX_CE); // Box size
+    st7789lcd_setsize(0, BOX_RS, BOX_CS, BOX_RE, BOX_CE); // Box size
 
     // Memory Write
     gpio_setreset(st7789lcd.DC, st7789lcd.DC_PORT, 0);                         // Reset DC pin for cmd
@@ -285,6 +286,8 @@ void st7789lcd_fillbox(uint16_t COLOR) // Fill box with single color
     }
 
     spi1_slaveselect(st7789lcd.CS, st7789lcd.CS_PORT, 0); // De-select slave device
+
+    st7789lcd.BG_COLOR[st7789lcd.BOX_NUM] = COLOR;
 }
 
 void st7789lcd_rowrst() // Resets row addr to 0
@@ -400,8 +403,8 @@ void st7789lcd_print(uint8_t *TEXT, uint16_t ROW_OFFSET, uint16_t COL_OFFSET, ui
                         else // For invalid pixels
                         {
                             // 16 bit pixel value for background
-                            spi1_8wf1byte((uint8_t)(st7789lcd.BG_COLOR >> 8));
-                            spi1_8wf1byte((uint8_t)st7789lcd.BG_COLOR);
+                            spi1_8wf1byte((uint8_t)(st7789lcd.BG_COLOR[st7789lcd.BOX_NUM] >> 8));
+                            spi1_8wf1byte((uint8_t)st7789lcd.BG_COLOR[st7789lcd.BOX_NUM]);
                         }
 
                         row_size--;
