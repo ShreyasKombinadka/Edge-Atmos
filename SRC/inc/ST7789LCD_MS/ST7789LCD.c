@@ -266,10 +266,10 @@ void st7789lcd_inbox(uint8_t BOX_NUM) // Required box call
 void st7789lcd_fillbox(uint16_t COLOR) // Fill box with single color
 {
     // Box coords
-    uint16_t BOX_RS = st7789lcd.TEXT_BOX[st7789lcd.BOX_NUM * 4];       // Row start
-    uint16_t BOX_RE = st7789lcd.TEXT_BOX[(st7789lcd.BOX_NUM * 4) + 1]; // Row end
-    uint16_t BOX_CS = st7789lcd.TEXT_BOX[(st7789lcd.BOX_NUM * 4) + 2]; // Col start
-    uint16_t BOX_CE = st7789lcd.TEXT_BOX[(st7789lcd.BOX_NUM * 4) + 3]; // Col end
+    uint16_t BOX_RS = st7789lcd.TEXT_BOX[st7789lcd.BOX_NUM * 4];       // Window row start
+    uint16_t BOX_RE = st7789lcd.TEXT_BOX[(st7789lcd.BOX_NUM * 4) + 1]; // Window ow end
+    uint16_t BOX_CS = st7789lcd.TEXT_BOX[(st7789lcd.BOX_NUM * 4) + 2]; // Window col start
+    uint16_t BOX_CE = st7789lcd.TEXT_BOX[(st7789lcd.BOX_NUM * 4) + 3]; // Window col end
 
     spi1_slaveselect(st7789lcd.CS, st7789lcd.CS_PORT, 1); // Select slave
 

@@ -39,10 +39,13 @@ int main(void)
     st7789lcd_settext(16, 12);
 
     st7789lcd_setbox(1, 0, 60, 0, 320);
-    st7789lcd_setbox(2, 60, 150, 0, 200);
-    st7789lcd_setbox(3, 60, 150, 200, 300);
+    st7789lcd_setbox(2, 60, 150, 0, 150);
+    st7789lcd_setbox(3, 60, 150, 150, 250);
+    st7789lcd_setbox(4, 60, 150, 250, 320);
+    st7789lcd_setbox(5, 150, 240, 0, 320);
 
     st7789lcd_inbox(1);
+    st7789lcd_fillbox(MS_GREEN_16);
     st7789lcd_print("EDGE ATMOS", 10, 40, MS_BRIGHT_RED_16, 2);
 
     spi1_slaveset(MEM_CS, MEM_CS_PORT, 2);
@@ -60,8 +63,20 @@ int main(void)
     st7789lcd_colrst();
     st7789lcd_print("HUMIDITY", 10, 10, MS_BLACK_16, 1);
 
-    st7789lcd_inbox(3);
+    st7789lcd_inbox(4);
     st7789lcd_fillbox(MS_CYAN_16);
+    st7789lcd_print("'", 10, 10, MS_BLACK_16, 1);
+    st7789lcd_colrst();
+    st7789lcd_print("hpa", 10, 10, MS_BLACK_16, 1);
+    st7789lcd_colrst();
+    st7789lcd_print("%", 10, 10, MS_BLACK_16, 1);
+
+    st7789lcd_inbox(5);
+    st7789lcd_fillbox(MS_ORANGE_16);
+    st7789lcd_print("THIS IS THE 5TH WINDOW FOR SOME REASON", 10, 10, MS_BLACK_16, 1);
+
+    st7789lcd_inbox(3);
+    st7789lcd_fillbox(MS_LIGHT_GRAY_16);
 
     while (1)
     {

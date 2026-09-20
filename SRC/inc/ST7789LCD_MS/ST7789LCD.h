@@ -18,7 +18,7 @@ struct ST7789LCD
     uint16_t WIDTH;
     uint8_t ROTATION;
 
-    uint16_t BG_COLOR[4];
+    uint16_t BG_COLOR[10];
     uint8_t TEXT_ROW_PIXEL_COUNT;
     uint8_t TEXT_COL_PIXEL_COUNT;
 
