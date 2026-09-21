@@ -7,9 +7,9 @@ A local weather station built with no HAL and all custom drivers and libraries b
 - All the driver and libraries are custom built.
 
 ## Status
-- [] Firmware
-- [] Hardware 
-- [] Completed
+- [ ] Firmware
+- [ ] Hardware 
+- [ ] Completed
 
 ## Libraries built
 1. I2C driver
