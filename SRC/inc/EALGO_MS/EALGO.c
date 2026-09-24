@@ -1,5 +1,6 @@
 #include "EALGO.h"
 
+void ealga_init() {}
 /*
 ealga_init(){
 

@@ -28,13 +28,19 @@
 
 int main(void)
 {
-    i2c1_init();
-    spi1_init(3, 0);
+    // Initialisations of drivers
+    i2c1_init();     // I2C initialisation
+    spi1_init(3, 0); // SPI initialisation
 
-    st7789lcd_pinset(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT);
-    st7789lcd_dispset(DISPLAY_ORIEN, 320, 240);
-    st7789lcd_init();
+    aht10_init();                          // AHT10 sensor initialisation
+    uint8_t FACTORY_CALIBRATION_DATA[24];  // BMP280 factory calibration data
+    bmp280_init(FACTORY_CALIBRATION_DATA); // BMP280 sensor initialisation
 
+    st7789lcd_pinset(TFT_CS, TFT_CS_PORT, TFT_DC, TFT_DC_PORT, TFT_RST, TFT_RST_PORT, TFT_LED, TFT_LED_PORT); // Display pin configuration
+    st7789lcd_dispset(DISPLAY_ORIEN, 320, 240);                                                               // Display settings
+    st7789lcd_init();                                                                                         // TFT display initialisation
+
+    // Display setup
     st7789lcd_clearall(MS_WHITE_16);
     st7789lcd_settext(16, 12);
 
@@ -47,13 +53,6 @@ int main(void)
     st7789lcd_inbox(1);
     st7789lcd_fillbox(MS_GREEN_16);
     st7789lcd_print("EDGE ATMOS", 10, 40, MS_BRIGHT_RED_16, 2);
-
-    spi1_slaveset(MEM_CS, MEM_CS_PORT, 2);
-
-    aht10_init();
-
-    uint8_t FACTORY_CALIBRATION_DATA[24];
-    bmp280_init(FACTORY_CALIBRATION_DATA);
 
     st7789lcd_inbox(2);
     st7789lcd_fillbox(MS_YELLOW_16);
