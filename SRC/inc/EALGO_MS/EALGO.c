@@ -1,6 +1,35 @@
 #include "EALGO.h"
+#include "../W25Q32_MS/W25Q32.h"
 
-void ealga_init() {}
+static EALGO ealgo;
+
+void ealga_logset(uint32_t LOG_START, uint32_t LOG_END)
+{
+    ealgo.LOG_START = LOG_START;
+    ealgo.LOG_END = LOG_END;
+}
+
+void ealga_dataset(uint32_t DATA_START, uint32_t DATA_END)
+{
+    ealgo.DATA_START = DATA_START;
+    ealgo.DATA_END = DATA_END;
+}
+
+void ealga_boot()
+{
+    uint8_t flag = 0;
+    uint32_t log_addr = 0;
+    uint8_t log = 0;
+    while (!flag)
+    {
+        log_addr = (ealgo.LOG_START + ealgo.LOG_END) / 2;
+
+        w25q32_read(log_addr, log, 8);
+
+        if (log == 1)
+            flag = 1;
+    }
+}
 /*
 ealga_init(){
 
