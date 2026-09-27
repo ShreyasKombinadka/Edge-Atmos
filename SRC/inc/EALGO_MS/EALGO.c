@@ -15,20 +15,24 @@ void ealga_dataset(uint32_t DATA_START, uint32_t DATA_END)
     ealgo.DATA_END = DATA_END;
 }
 
-void ealga_boot()
+void *ealga_boot()
 {
     uint8_t flag = 0;
-    uint32_t log_addr = 0;
+    uint32_t log_addr = ealgo.LOG_START;
     uint8_t log = 0;
     while (!flag)
     {
-        log_addr = (ealgo.LOG_START + ealgo.LOG_END) / 2;
+        w25q32_read(log_addr, &log, 8);
 
-        w25q32_read(log_addr, log, 8);
+        if ((log & 0xFE) == 0)
+        {
+        }
 
-        if (log == 1)
-            flag = 1;
+        else
+            log_addr++;
     }
+
+    return
 }
 /*
 ealga_init(){
