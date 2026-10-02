@@ -26,8 +26,8 @@ void *ealga_boot()
 
         if ((log & 0xFE) == 0)
         {
+            
         }
-
         else
             log_addr++;
     }
