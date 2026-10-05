@@ -3,27 +3,33 @@
 
 #include <stdint.h>
 
-typedef enum
+typedef enum // States of I2C sequnece
 {
     START,
     SB,
     ADDR,
-
+    WRITE,
+    Tx,
+    TxE,
+    BTF,
+    STOP
 } I2C_STATE;
 
 typedef struct
 {
-    I2C_STATE STATE;
-    uint8_t ADDR;
+    I2C_STATE STATE;   // I2C state tracker
+    uint8_t ADDR;      // Slave address
+    uint8_t W_DATA;    // Write data
+    uint8_t W_COUNT;   // Write byte counter
+    uint8_t LAST_BYTE; // Last byte flag
 } I2C;
 
 void i2c1_init(void);
-void i2c1_wake(uint8_t addr);
+void i2c1_wake(uint8_t ADDR);
+void i2c1_w1byte(uint8_t DATA);
 void i2c1_stop(void);
-void i2c1_w1byte(uint8_t data);
 void i2c1_rsnbyte(uint8_t addr, uint8_t *data_addr, int n);
 
-// Interupt handlers
-void I2C1_IRQHandler(void); // Wake interupt handler
+void I2C1_IRQHandler(void); // Interupt handler
 
 #endif

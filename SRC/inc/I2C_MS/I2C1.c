@@ -33,38 +33,69 @@ void i2c1_wake(uint8_t ADDR) // Wake the target device
 
     i2c1.ADDR = ADDR; // Save adress for interupt functions
 }
+
 void I2C1_IRQHandler(void) // I2C1 interupt handler
 {
     if (i2c1.STATE == START) // Start bit sent
     {
-        i2c1.STATE = SB;                 // Flag update
+        i2c1.STATE = SB;                 // Start bit sent state
         I2C1->DR = (i2c1.ADDR << 1) | 0; // Send address
     }
     else if (i2c1.STATE == SB) // Address sent
     {
-        i2c1.STATE = ADDR; // Flag update
+        i2c1.STATE = ADDR; // Address sent state
         (void)I2C1->SR2;   // Clear status registers
+
+        // Byte counter and flag reset
+        i2c1.W_COUNT = 0;   // Byte count
+        i2c1.LAST_BYTE = 0; // Last byte flag
     }
-    else if (i2c1.STATE == ADDR) // Address sent
+    else if (i2c1.STATE == ADDR || i2c1.STATE == Tx) // Address sent or Tx data ready
     {
-        i2c1.STATE = ADDR; // Flag update
-        (void)I2C1->SR2;   // Clear status registers
+        i2c1.STATE = TxE;           // Tx buffer empty stat
+        if (i2c1.LAST_BYTE == 0)    // Last byte flag not set
+            I2C1->DR = i2c1.W_DATA; // Data too be sent
+    }
+    else if (i2c1.STATE == TxE) // Tx buffer empty
+    {
+        i2c1.STATE = BTF;           // Byte transfer finsihs state
+        if (i2c1.LAST_BYTE == 1)    // Llast byte flag set
+            I2C1->DR = i2c1.W_DATA; // Data too be sent
     }
 }
 
 // Write 1byte of data(int)
-void i2c1_w1byte(uint8_t data)
+void i2c1_w1byte(uint8_t DATA)
 {
-    I2C1->DR = data;
-    while (!(I2C1->SR1 & (1U << 7)))
-        ;
-    while (!(I2C1->SR1 & (1U << 2)))
-        ;
+    if (i2c1.STATE == ADDR || i2c1.STATE == BTF) // Address or byte sent
+    {
+        i2c1.STATE = Tx;    // Tx buffer not empty state
+        i2c1.W_DATA = DATA; // Save the data to be sent
+        i2c1.LAST_BYTE = 1; // Last byte
+    }
+}
+
+// Write nbyte of data(int)
+void i2c1_wnbyte(uint8_t *DATA, uint8_t LENGTH)
+{
+    if (i2c1.STATE == ADDR || i2c1.STATE == TxE) // Address or byte sent
+    {
+        i2c1.STATE = Tx;                  // Tx buffer not empty state
+        i2c1.W_DATA = DATA[i2c1.W_COUNT]; // Save the data to be sent
+
+        if (i2c1.W_COUNT = (LENGTH - 1)) // Last byte
+            i2c1.LAST_BYTE = 1;          // Last byte flag set
+        else                             // Not last byte
+            i2c1.LAST_BYTE = 0;          // Last byte flag cleared
+
+        i2c1.W_COUNT++; // Incriment byte counter
+    }
 }
 
 // Stop the I2C1
 void i2c1_stop(void)
 {
+    i2c1.STATE = STOP;
     I2C1->CR1 |= (1U << 9);
 }
 
