@@ -50,26 +50,20 @@ void I2C1_IRQHandler(void) // I2C1 interupt handler
         i2c1.W_COUNT = 0; // Byte counter cleared
         i2c1.N_BYTE = 0;  // N byte flag cleared
     }
-    else if (i2c1.STATE == ADDR || i2c1.Tx == 1) // Address sent or Tx data ready
+    else if (i2c1.STATE == ADDR || i2c1.N_BYTE == 1) // Address sent
     {
-        i2c1.STATE = TxE;     // Tx buffer empty stat
-        if (i2c1.N_BYTE == 1) // N byte flag not set
+        i2c1.STATE = TxE;                                     // Tx buffer empty stat
+        if (i2c1.N_BYTE == 1 && i2c1.W_COUNT < i2c1.W_LENGTH) // N byte flag set and counter is less than total byte count
         {
             I2C1->DR = i2c1.W_DATA[i2c1.W_COUNT]; // Data too be sent
-
-            if (i2c1.W_COUNT >= (i2c1.W_LENGTH - 1)) // N byte
-                i2c1.N_BYTE = 1;                     // N byte flag set
-            else                                     // Not N byte
-                i2c1.N_BYTE = 0;                     // N byte flag cleared
-
-            i2c1.W_COUNT++; // Incriment byte counter
+            i2c1.W_COUNT++;                       // Incriment byte counter
         }
+        else
+            i2c1.N_BYTE == 0; // N byte flag reset
     }
     else if (i2c1.STATE == TxE) // Tx buffer empty
     {
-        i2c1.STATE = BTF;                         // Byte transfer finsihs state
-        if (i2c1.N_BYTE == 0)                     // LN byte flag set
-            I2C1->DR = i2c1.W_DATA[i2c1.W_COUNT]; // Data too be sent
+        i2c1.STATE = BTF; // Byte transfer finsihs state
     }
 }
 
@@ -78,10 +72,8 @@ void i2c1_w1byte(uint8_t DATA)
 {
     if (i2c1.STATE == ADDR || i2c1.STATE == BTF) // Address or byte sent
     {
-        i2c1.Tx == 1;                     // Tx data ready flag
-        i2c1.W_COUNT = 0;                 // Byte counter cleared
-        i2c1.W_DATA[i2c1.W_COUNT] = DATA; // Save the data to be sent
-        i2c1.N_BYTE = 0;                  // 1 byte
+        I2C1->DR = DATA; // Data to be sent
+        i2c1.N_BYTE = 0; // N byte flag reset
     }
 }
 
@@ -90,10 +82,14 @@ void i2c1_wnbyte(uint8_t *DATA, uint8_t LENGTH)
 {
     if (i2c1.STATE == ADDR || i2c1.STATE == BTF) // Address or byte sent
     {
-        i2c1.Tx == 1;        // Tx data ready flag
         i2c1.W_COUNT = 0;    // Byte counter cleared
         i2c1.W_DATA = *DATA; // Save the data to be sent
-        i2c1.N_BYTE = 1;     // N byte
+        if (i2c1.W_COUNT == 0)
+        {
+            I2C1->DR = DATA[0]; // First data to be sent to start the loop
+            i2c1.W_COUNT++;     // Incriment byte counter
+        }
+        i2c1.N_BYTE = 1; // N byte flag cleared
     }
 }
 
