@@ -18,7 +18,7 @@ typedef struct
 {
     I2C_STATE STATE;  // I2C state tracker
     uint8_t ADDR;     // Slave address
-    uint8_t *W_DATA;  // Write data
+    uint8_t *W_DATA;  // Write data pointer
     uint8_t W_COUNT;  // Write byte counter
     uint8_t W_LENGTH; // Write byte number
     uint8_t N_BYTE;   // N byte flag

@@ -50,7 +50,7 @@ void I2C1_IRQHandler(void) // I2C1 interupt handler
         i2c1.W_COUNT = 0; // Byte counter cleared
         i2c1.N_BYTE = 0;  // N byte flag cleared
     }
-    else if (i2c1.STATE == ADDR || i2c1.N_BYTE == 1) // Address sent
+    else if (i2c1.STATE == ADDR || i2c1.N_BYTE == 1) // Address sent or N byte flag set
     {
         i2c1.STATE = TxE;                                     // Tx buffer empty stat
         if (i2c1.N_BYTE == 1 && i2c1.W_COUNT < i2c1.W_LENGTH) // N byte flag set and counter is less than total byte count
@@ -70,26 +70,23 @@ void I2C1_IRQHandler(void) // I2C1 interupt handler
 // Write 1byte of data(int)
 void i2c1_w1byte(uint8_t DATA)
 {
-    if (i2c1.STATE == ADDR || i2c1.STATE == BTF) // Address or byte sent
+    if (i2c1.STATE == ADDR || i2c1.STATE == BTF) // Address or byte sent status set
     {
-        I2C1->DR = DATA; // Data to be sent
         i2c1.N_BYTE = 0; // N byte flag reset
+        I2C1->DR = DATA; // Data to be sent
     }
 }
 
 // Write nbyte of data(int)
 void i2c1_wnbyte(uint8_t *DATA, uint8_t LENGTH)
 {
-    if (i2c1.STATE == ADDR || i2c1.STATE == BTF) // Address or byte sent
+    if (i2c1.STATE == ADDR || i2c1.STATE == BTF) // Address or byte sent status set
     {
         i2c1.W_COUNT = 0;    // Byte counter cleared
-        i2c1.W_DATA = *DATA; // Save the data to be sent
-        if (i2c1.W_COUNT == 0)
-        {
-            I2C1->DR = DATA[0]; // First data to be sent to start the loop
-            i2c1.W_COUNT++;     // Incriment byte counter
-        }
-        i2c1.N_BYTE = 1; // N byte flag cleared
+        i2c1.N_BYTE = 1;     // N byte flag set
+        i2c1.W_DATA = *DATA; // Save the data pointer to be sent
+        I2C1->DR = DATA[0];  // First data to be sent to start the loop
+        i2c1.W_COUNT++;      // Incriment byte counter
     }
 }
 
