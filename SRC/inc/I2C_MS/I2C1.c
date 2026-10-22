@@ -46,9 +46,7 @@ void I2C1_IRQHandler(void) // I2C1 interupt handler
         i2c1.STATE = ADDR; // Address sent state
         (void)I2C1->SR2;   // Clear status registers
 
-        // Byte counter and flag reset
-        i2c1.W_COUNT = 0; // Byte counter cleared
-        i2c1.N_BYTE = 0;  // N byte flag cleared
+        buff_rst(); // Buffer clear
     }
     else if (i2c1.STATE == ADDR || i2c1.N_BYTE == 1) // Address sent or N byte flag set
     {
@@ -70,23 +68,15 @@ void I2C1_IRQHandler(void) // I2C1 interupt handler
 // Write 1byte of data(int)
 void i2c1_w1byte(uint8_t DATA)
 {
-    if (i2c1.STATE == ADDR || i2c1.STATE == BTF) // Address or byte sent status set
-    {
-        i2c1.N_BYTE = 0; // N byte flag reset
-        I2C1->DR = DATA; // Data to be sent
-    }
+    buff_write(DATA); // Write data to buffer
 }
 
 // Write nbyte of data(int)
 void i2c1_wnbyte(uint8_t *DATA, uint8_t LENGTH)
 {
-    if (i2c1.STATE == ADDR || i2c1.STATE == BTF) // Address or byte sent status set
+    for (volatile int i = 0; i < LENGTH; i++)
     {
-        i2c1.W_COUNT = 0;    // Byte counter cleared
-        i2c1.N_BYTE = 1;     // N byte flag set
-        i2c1.W_DATA = *DATA; // Save the data pointer to be sent
-        I2C1->DR = DATA[0];  // First data to be sent to start the loop
-        i2c1.W_COUNT++;      // Incriment byte counter
+        buff_write(DATA[i]); // Write data to buffer
     }
 }
 
@@ -126,4 +116,32 @@ void i2c1_rsnbyte(uint8_t addr, uint8_t *data_addr, int n)
     }
 
     i2c1_stop();
+}
+
+// Helper functions
+void buff_rst(void) // Buffer reset
+{
+    i2c1.W_BUFF_ADDR = 0; // Buff write addr clear
+    i2c1.R_BUFF_ADDR = 0; // Buff read addr clear
+
+    for (volatile int i = 0; i < BUFF_SIZE; i++)
+        i2c1.DATA_BUFF[i] = 0;
+}
+
+void buff_write(uint8_t DATA) // Buffer write
+{
+    if (i2c1.W_BUFF_ADDR >= BUFF_SIZE)
+        i2c1.W_BUFF_ADDR = 0; // Buff write addr reset
+
+    i2c1.DATA_BUFF[i2c1.W_BUFF_ADDR] = DATA;
+    i2c1.W_BUFF_ADDR++;
+}
+
+uint8_t buff_read(void) // Buffer read
+{
+    if (i2c1.R_BUFF_ADDR >= BUFF_SIZE)
+        i2c1.R_BUFF_ADDR = 0; // Buff read addr reset
+
+    i2c1.R_BUFF_ADDR++;
+    return i2c1.DATA_BUFF[i2c1.W_BUFF_ADDR - 1];
 }
