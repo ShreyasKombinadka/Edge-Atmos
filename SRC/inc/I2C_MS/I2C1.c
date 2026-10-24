@@ -119,29 +119,92 @@ void i2c1_rsnbyte(uint8_t addr, uint8_t *data_addr, int n)
 }
 
 // Helper functions
-void buff_rst(void) // Buffer reset
+void buff_rst(uint8_t BUFF_NUM) // Buffer reset
 {
-    i2c1.W_BUFF_ADDR = 0; // Buff write addr clear
-    i2c1.R_BUFF_ADDR = 0; // Buff read addr clear
+    switch (BUFF_NUM)
+    {
+    case 0:
+        i2c1.W_ABUFF_ADDR = 0; // Buff write addr clear
+        i2c1.R_ABUFF_ADDR = 0; // Buff read addr clear
 
-    for (volatile int i = 0; i < BUFF_SIZE; i++)
-        i2c1.DATA_BUFF[i] = 0;
+        for (volatile int i = 0; i < BUFF_SIZE; i++)
+            i2c1.ADDR_BUFF[i] = 0;
+        break;
+    case 1:
+        i2c1.W_DBUFF_ADDR = 0; // Buff write addr clear
+        i2c1.R_DBUFF_ADDR = 0; // Buff read addr clear
+
+        for (volatile int i = 0; i < BUFF_SIZE; i++)
+            i2c1.DATA_BUFF[i] = 0;
+        break;
+    case 2:
+        i2c1.W_EBUFF_ADDR = 0; // Buff write addr clear
+        i2c1.R_EBUFF_ADDR = 0; // Buff read addr clear
+
+        for (volatile int i = 0; i < BUFF_SIZE; i++)
+            i2c1.END_BUFF[i] = 0;
+        break;
+    default:
+        break;
+    }
 }
 
-void buff_write(uint8_t DATA) // Buffer write
+void buff_write(uint8_t BUFF_NUM, uint8_t DATA) // Buffer write
 {
-    if (i2c1.W_BUFF_ADDR >= BUFF_SIZE)
-        i2c1.W_BUFF_ADDR = 0; // Buff write addr reset
+    switch (BUFF_NUM)
+    {
+    case 0:
+        if (i2c1.W_ABUFF_ADDR >= BUFF_SIZE)
+            i2c1.W_ABUFF_ADDR = 0; // Buff write addr reset
 
-    i2c1.DATA_BUFF[i2c1.W_BUFF_ADDR] = DATA;
-    i2c1.W_BUFF_ADDR++;
+        i2c1.ADDR_BUFF[i2c1.W_ABUFF_ADDR] = DATA;
+        i2c1.W_ABUFF_ADDR++;
+        break;
+    case 1:
+        if (i2c1.W_DBUFF_ADDR >= BUFF_SIZE)
+            i2c1.W_DBUFF_ADDR = 0; // Buff write addr reset
+
+        i2c1.DATA_BUFF[i2c1.W_DBUFF_ADDR] = DATA;
+        i2c1.W_DBUFF_ADDR++;
+        break;
+    case 2:
+        if (i2c1.W_EBUFF_ADDR >= BUFF_SIZE)
+            i2c1.W_EBUFF_ADDR = 0; // Buff write addr reset
+
+        i2c1.END_BUFF[i2c1.W_EBUFF_ADDR] = DATA;
+        i2c1.W_EBUFF_ADDR++;
+        break;
+    default:
+        break;
+    }
 }
 
-uint8_t buff_read(void) // Buffer read
+uint8_t buff_read(uint8_t BUFF_NUM) // Buffer read
 {
-    if (i2c1.R_BUFF_ADDR >= BUFF_SIZE)
-        i2c1.R_BUFF_ADDR = 0; // Buff read addr reset
+    switch (BUFF_NUM)
+    {
+    case 0:
+        if (i2c1.R_ABUFF_ADDR >= BUFF_SIZE)
+            i2c1.R_ABUFF_ADDR = 0; // Buff read addr reset
 
-    i2c1.R_BUFF_ADDR++;
-    return i2c1.DATA_BUFF[i2c1.W_BUFF_ADDR - 1];
+        i2c1.R_ABUFF_ADDR++;
+        return i2c1.ADDR_BUFF[i2c1.W_ABUFF_ADDR - 1];
+        break;
+    case 1:
+        if (i2c1.R_DBUFF_ADDR >= BUFF_SIZE)
+            i2c1.R_DBUFF_ADDR = 0; // Buff read addr reset
+
+        i2c1.R_DBUFF_ADDR++;
+        return i2c1.DATA_BUFF[i2c1.W_DBUFF_ADDR - 1];
+        break;
+    case 2:
+        if (i2c1.R_EBUFF_ADDR >= BUFF_SIZE)
+            i2c1.R_EBUFF_ADDR = 0; // Buff read addr reset
+
+        i2c1.R_EBUFF_ADDR++;
+        return i2c1.END_BUFF[i2c1.W_EBUFF_ADDR - 1];
+        break;
+    default:
+        break;
+    }
 }
