@@ -37,6 +37,9 @@ void i2c1_wake(uint8_t ADDR);
 void i2c1_w1byte(uint8_t DATA);
 void i2c1_stop(void);
 void i2c1_rsnbyte(uint8_t addr, uint8_t *data_addr, int n);
+void buff_rst(uint8_t BUFF_SELECT);                 // Buffer reset
+void buff_write(uint8_t BUFF_SELECT, uint8_t DATA); // Buffer write
+uint8_t buff_read(uint8_t BUFF_SELECT);             // Buffer read
 
 void I2C1_IRQHandler(void); // Interupt handler
 
