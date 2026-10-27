@@ -52,7 +52,7 @@ void buff_rst(uint8_t BUFF_SELECT) // Buffer reset
         break;
     }
 
-    printf("Reset done");
+    printf("Reset done\n");
 }
 
 void buff_write(uint8_t BUFF_SELECT, uint8_t DATA) // Buffer write

@@ -7,6 +7,8 @@ int main(void)
     buff_rst(0);
     buff_rst(1);
     buff_rst(2);
-    printf("Done");
+    buff_rst(3);
+
+    printf("Done\n");
     return 0;
 }
