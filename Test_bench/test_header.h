@@ -30,7 +30,7 @@ typedef struct
     uint8_t N_BYTE;        // N byte flag
 } I2C;
 
-#define BUFF_SIZE 100
+#define BUFF_SIZE 5
 
 void i2c1_init(void);
 void i2c1_wake(uint8_t ADDR);
