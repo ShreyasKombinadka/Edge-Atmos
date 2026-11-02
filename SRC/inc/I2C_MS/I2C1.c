@@ -46,12 +46,12 @@ void I2C1_IRQHandler(void) // I2C1 interupt handler
         i2c1.STATE = ADDR; // Address sent state
         (void)I2C1->SR2;   // Clear status registers
 
-        buff_rst(); // Buffer clear
+        buff_rst(3); // Buffer clear
     }
     else if (i2c1.STATE == ADDR || i2c1.N_BYTE == 1) // Address sent or N byte flag set
     {
-        i2c1.STATE = TxE;                                     // Tx buffer empty stat
-        if (i2c1.N_BYTE == 1 && i2c1.W_COUNT < i2c1.W_LENGTH) // N byte flag set and counter is less than total byte count
+        i2c1.STATE = TxE; // Tx buffer empty stat
+        if (buff_read(2)) // N byte flag set and counter is less than total byte count
         {
             I2C1->DR = i2c1.W_DATA[i2c1.W_COUNT]; // Data too be sent
             i2c1.W_COUNT++;                       // Incriment byte counter
@@ -163,8 +163,6 @@ void buff_rst(uint8_t BUFF_SELECT) // Buffer reset
     default:
         break;
     }
-
-    printf("Reset done");
 }
 
 void buff_write(uint8_t BUFF_SELECT, uint8_t DATA) // Buffer write
@@ -172,22 +170,22 @@ void buff_write(uint8_t BUFF_SELECT, uint8_t DATA) // Buffer write
     switch (BUFF_SELECT)
     {
     case 0: // Addr buffer
-        if (i2c1.W_ABUFF_ADDR >= BUFF_SIZE)
+        if (i2c1.W_ABUFF_ADDR > BUFF_SIZE - 1)
             i2c1.W_ABUFF_ADDR = 0; // Buff write addr reset
         i2c1.ADDR_BUFF[i2c1.W_ABUFF_ADDR] = DATA;
-        i2c1.W_ABUFF_ADDR++;
+        i2c1.W_ABUFF_ADDR++; // Incrimnet buff location
         break;
     case 1: // Data buffer
-        if (i2c1.W_DBUFF_ADDR >= BUFF_SIZE)
+        if (i2c1.W_DBUFF_ADDR > BUFF_SIZE - 1)
             i2c1.W_DBUFF_ADDR = 0; // Buff write addr reset
         i2c1.DATA_BUFF[i2c1.W_DBUFF_ADDR] = DATA;
-        i2c1.W_DBUFF_ADDR++;
+        i2c1.W_DBUFF_ADDR++; // Incrimnet buff location
         break;
     case 2: // End buffer
-        if (i2c1.W_EBUFF_ADDR >= BUFF_SIZE)
+        if (i2c1.W_EBUFF_ADDR > BUFF_SIZE - 1)
             i2c1.W_EBUFF_ADDR = 0; // Buff write addr reset
         i2c1.END_BUFF[i2c1.W_EBUFF_ADDR] = DATA;
-        i2c1.W_EBUFF_ADDR++;
+        i2c1.W_EBUFF_ADDR++; // Incrimnet buff location
         break;
     default:
         break;
@@ -196,27 +194,30 @@ void buff_write(uint8_t BUFF_SELECT, uint8_t DATA) // Buffer write
 
 uint8_t buff_read(uint8_t BUFF_SELECT) // Buffer read
 {
+    uint8_t data_temp = 0; // Temp data varibale
     switch (BUFF_SELECT)
     {
     case 0: // Addr buffer
-        if (i2c1.R_ABUFF_ADDR >= BUFF_SIZE)
+        if (i2c1.R_ABUFF_ADDR > BUFF_SIZE - 1)
             i2c1.R_ABUFF_ADDR = 0; // Buff read addr reset
-        i2c1.R_ABUFF_ADDR++;
-        return i2c1.ADDR_BUFF[i2c1.R_ABUFF_ADDR - 1];
+        data_temp = i2c1.ADDR_BUFF[i2c1.R_ABUFF_ADDR];
+        i2c1.R_ABUFF_ADDR++; // Incrimnet buff location
         break;
     case 1: // Data buffer
-        if (i2c1.R_DBUFF_ADDR >= BUFF_SIZE)
+        if (i2c1.R_DBUFF_ADDR > BUFF_SIZE - 1)
             i2c1.R_DBUFF_ADDR = 0; // Buff read addr reset
-        i2c1.R_DBUFF_ADDR++;
-        return i2c1.DATA_BUFF[i2c1.R_DBUFF_ADDR - 1];
+        data_temp = i2c1.DATA_BUFF[i2c1.R_DBUFF_ADDR];
+        i2c1.R_DBUFF_ADDR++; // Incrimnet buff location
         break;
     case 2: // End buffer
-        if (i2c1.R_EBUFF_ADDR >= BUFF_SIZE)
+        if (i2c1.R_EBUFF_ADDR > BUFF_SIZE - 1)
             i2c1.R_EBUFF_ADDR = 0; // Buff read addr reset
-        i2c1.R_EBUFF_ADDR++;
-        return i2c1.END_BUFF[i2c1.R_EBUFF_ADDR - 1];
+        data_temp = i2c1.END_BUFF[i2c1.R_EBUFF_ADDR];
+        i2c1.R_EBUFF_ADDR++; // Incrimnet buff location
         break;
     default:
         break;
     }
+
+    return data_temp; // Return data
 }
