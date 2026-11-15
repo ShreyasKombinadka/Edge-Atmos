@@ -24,6 +24,8 @@ void i2c1_init(void) // Start I2C1 block
     I2C1->CR2 |= (1U << 10); // Buffer interrupt enable
 
     NVIC->ISER[0] = (1U << 31); // I2C1 event interrupt
+
+    buff_rst(3); // Buffer clear
 }
 
 void i2c1_wake(uint8_t ADDR) // Wake the target device
@@ -31,35 +33,32 @@ void i2c1_wake(uint8_t ADDR) // Wake the target device
     i2c1.STATE = START;     // I2C seqence started
     I2C1->CR1 |= (1U << 8); // Send start bit
 
-    i2c1.ADDR = ADDR; // Save adress for interupt functions
+    buff_write(0, ADDR); // Save adress in buffer
 }
 
 void I2C1_IRQHandler(void) // I2C1 interupt handler
 {
     if (i2c1.STATE == START) // Start bit sent
     {
-        i2c1.STATE = SB;                 // Start bit sent state
-        I2C1->DR = (i2c1.ADDR << 1) | 0; // Send address
+        i2c1.STATE = SB;                    // Start bit sent state
+        I2C1->DR = (buff_read(0) << 1) | 0; // Send address
     }
     else if (i2c1.STATE == SB) // Address sent
     {
         i2c1.STATE = ADDR; // Address sent state
         (void)I2C1->SR2;   // Clear status registers
-
-        buff_rst(3); // Buffer clear
     }
     else if (i2c1.STATE == ADDR || i2c1.N_BYTE == 1) // Address sent or N byte flag set
     {
-        i2c1.STATE = TxE; // Tx buffer empty stat
-        if (buff_read(2)) // N byte flag set and counter is less than total byte count
+        i2c1.STATE = Tx;       // Tx done
+        if (buff_read(2) == 0) // No end flag
         {
-            I2C1->DR = i2c1.W_DATA[i2c1.W_COUNT]; // Data too be sent
-            i2c1.W_COUNT++;                       // Incriment byte counter
+            I2C1->DR = buff_read(1); // Data too be sent
         }
         else
             i2c1.N_BYTE == 0; // N byte flag reset
     }
-    else if (i2c1.STATE == TxE) // Tx buffer empty
+    else if (i2c1.STATE == Tx) // Tx done
     {
         i2c1.STATE = BTF; // Byte transfer finsihs state
     }
@@ -68,7 +67,7 @@ void I2C1_IRQHandler(void) // I2C1 interupt handler
 // Write 1byte of data(int)
 void i2c1_w1byte(uint8_t DATA)
 {
-    buff_write(DATA); // Write data to buffer
+    buff_write(1, DATA); // Write data to buffer
 }
 
 // Write nbyte of data(int)
@@ -76,7 +75,7 @@ void i2c1_wnbyte(uint8_t *DATA, uint8_t LENGTH)
 {
     for (volatile int i = 0; i < LENGTH; i++)
     {
-        buff_write(DATA[i]); // Write data to buffer
+        buff_write(2, DATA[i]); // Write data to buffer
     }
 }
 

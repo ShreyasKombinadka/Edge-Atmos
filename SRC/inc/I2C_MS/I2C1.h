@@ -9,7 +9,7 @@ typedef enum // States of I2C sequnece
     SB,
     ADDR,
     WRITE,
-    TxE,
+    Tx,
     BTF,
     STOP
 } I2C_STATE;
@@ -17,7 +17,6 @@ typedef enum // States of I2C sequnece
 typedef struct
 {
     I2C_STATE STATE;       // I2C state tracker
-    uint8_t ADDR;          // Slave address
     uint8_t ADDR_BUFF[32]; // Addr buffer
     uint8_t R_ABUFF_ADDR;  // Addr buffer read location
     uint8_t W_ABUFF_ADDR;  // Data buffer write location
