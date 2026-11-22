@@ -3,19 +3,19 @@
 
 static EALGO ealgo;
 
-void ealga_logset(uint32_t LOG_START, uint32_t LOG_END)
+void ealgo_logset(uint32_t LOG_START, uint32_t LOG_END)
 {
     ealgo.LOG_START = LOG_START;
     ealgo.LOG_END = LOG_END;
 }
 
-void ealga_dataset(uint32_t DATA_START, uint32_t DATA_END)
+void ealgo_dataset(uint32_t DATA_START, uint32_t DATA_END)
 {
     ealgo.DATA_START = DATA_START;
     ealgo.DATA_END = DATA_END;
 }
 
-void *ealga_boot()
+void *ealgo_boot()
 {
     uint8_t flag = 0;
     uint32_t log_addr = ealgo.LOG_START;
@@ -26,8 +26,7 @@ void *ealga_boot()
 
         if ((log & 0xFE) == 0)
         {
-            
-        }
+                }
         else
             log_addr++;
     }
