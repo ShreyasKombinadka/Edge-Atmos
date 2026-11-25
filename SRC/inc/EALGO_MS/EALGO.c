@@ -15,7 +15,7 @@ void ealgo_dataset(uint32_t DATA_START, uint32_t DATA_END) // Data location set
     ealgo.DATA_END = DATA_END;
 }
 
-uint32_t ealgo_boot()
+void ealgo_boot()
 {
     uint8_t flag = 0;
     uint32_t log_start = ealgo.LOG_START;
@@ -23,18 +23,12 @@ uint32_t ealgo_boot()
     uint8_t log = 0;
     while (!flag)
     {
-
         w25q32_read(log_start, &log, 8);
         if ((log & 1))
             log_start = log_start + 1;
-        else
-            w25q32_read(log_start, &log, 8);
-        if ((log & 1))
-            log_start = log_start + 1;
     }
-
-    return
 }
+
 /*
 ealga_init(){
 
